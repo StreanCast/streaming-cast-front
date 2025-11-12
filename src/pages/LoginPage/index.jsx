@@ -1,9 +1,9 @@
 
-const HomePage = () => {
+const LoginPage = () => {
     return ( 
         <>   
         </>
      );
 }
  
-export default HomePage;
+export default LoginPage;
