@@ -13,8 +13,10 @@ export default function FileManager() {
     const [isUploading, setIsUploading] = useState(false);
     const [progress, setProgress] = useState(0);
     const [message, setMessage] = useState("");
+
     const token = localStorage.getItem("token");
     const stationId = localStorage.getItem("stationId");
+
     if (!stationId || stationId === "null") {
         window.location.href = "/login";
     }
@@ -211,7 +213,7 @@ export default function FileManager() {
     };
 
     return (
-        <div className="min-h-screen p-6 flex flex-col bg-white">
+        <div className="min-h-screen p-6 flex flex-col bg-white w-full">
             <h1 className="text-3xl font-bold mb-6 text-slate-800">Gerenciador de arquivos</h1>
 
             <div className="rounded-lg border-3 p-5" style={{ borderColor: "#DDDDDD" }}>
@@ -248,7 +250,7 @@ export default function FileManager() {
                         <button onClick={() => setIsModalNewFolderOpen(true)} className="px-4 py-2 rounded-lg font-semibold border-3 text-white bg-blue-500 hover:bg-blue-700 cursor-pointer" style={{ borderColor: "#DDDDDD" }}>
                             Nova pasta
                         </button>
-                        <div className="w-auto w-lg">
+                        <div className="w-auto sm:w-[200px] md:w-[350px] lg:w-[450px] lx:w-[600px]">
                             {/* Input escondido */}
                             <input ref={fileInputRef} type="file" multiple accept="audio/mpeg" className="hidden" id="file-upload" onChange={handleUpload} />
                             {/* Label estilizado como botão */}
@@ -297,13 +299,13 @@ export default function FileManager() {
                                                 {/* Lado esquerdo: ícone + nome */}
                                                 <div className="flex items-center gap-3">
                                                     <Music size={25} className="text-purple-500" />
-                                                    <div className="text-slate-800">{file.name}</div>
+                                                    <div className="text-slate-800 truncate max-w-110">{file.name}</div>
                                                 </div>
                                             </div>
                                         )}
                                     </td>
                                     <td className="px-4 text-xl text-slate-800 whitespace-nowrap">{file.size}</td>
-                                    <td className="py-4 text-xl text-slate-800 whitespace-nowrap">{file.path}</td>
+                                    <td className="py-4 text-xl text-slate-800 whitespace-nowrap truncate max-w-30">{file.path}</td>
                                     {file.isDirectory ? (
                                         <td className="px-4 py-4 text-xl text-slate-800 whitespace-nowrap flex justify-end">
                                             <Trash size={25} onClick={() => openDeleteModal(file)} className="text-red-500 hover:text-red-700 cursor-pointer" />
