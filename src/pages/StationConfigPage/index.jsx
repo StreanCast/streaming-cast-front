@@ -4,12 +4,13 @@ import { BASE_URL } from '../../config';
 
 const StationConfigPage = () => {
     const [formData, setFormData] = useState({
-        stationName: '',
-        description: '',
-        logoUrl: '',
-        streamingUrl: '',
-        bitrate: ''
+        stationName: "",
+        description: "",
+        logoUrl: "",
+        streamingUrl: "",
+        bitrate: ""
     });
+
     const [message, setMessage] = useState("");
 
     const token = localStorage.getItem("token");
@@ -22,7 +23,7 @@ const StationConfigPage = () => {
     useEffect(() => {
         const fetchStationData = async () => {
             try {
-                const response = await fetch(`${BASE_URL}/api/stations/${stationId}`, {
+                const response = await fetch(`${BASE_URL}/api/${stationId}/infoStationReader`, {
                     headers: {
                         "Authorization": `Bearer ${token}`,
                     }
@@ -38,11 +39,12 @@ const StationConfigPage = () => {
 
                 const data = await response.json();
                 setFormData({
-                    stationName: data.stationName,
-                    description: data.description,
-                    logoUrl: data.logoUrl,
-                    streamingUrl: data.streamingUrl,
-                    bitrate: data.bitrate
+                    stationName: data.data.streamName,
+                    description: data.data.streamDescription,
+                    logoUrl: data.data.logoUrl,
+                    streamingUrl: `${data.data.transmissionIpServer}:${data.data.transmissionPort}${data.data.transmissionMount}`,
+                    bitrate: data.data.bitrate
+
                 });
 
             } catch (error) {
@@ -63,13 +65,29 @@ const StationConfigPage = () => {
 
     const handleSubmit = async () => {
         try {
-            const response = await fetch(`${BASE_URL}/api/stations/${stationId}`, {
+            const response = await fetch(`${BASE_URL}/api/infoStationUpdate`, {
                 method: 'PUT',
                 headers: {
                     'Content-Type': 'application/json',
                     "Authorization": `Bearer ${token}`,
                 },
-                body: JSON.stringify(formData)
+                body: JSON.stringify({
+                    streamUrl: null,
+                    transmissionPassword: null,
+                    mp3MetadataInterval: null,
+                    burstSize: null,
+                    bitrate: formData.bitrate,
+                    transmissionUser: null,
+                    type: null,
+                    streamName: formData.stationName,
+                    transmissionMount: null,
+                    sourcePassword: null,
+                    adminUser: null,
+                    relayPassword: null,
+                    genre: null,
+                    streamDescription: formData.description,
+                    adminPassword: null
+                })
             });
 
             if (response.status === 403) {
@@ -160,9 +178,10 @@ const StationConfigPage = () => {
                                     type="text"
                                     id="logoUrl"
                                     name="logoUrl"
-                                    value={formData.logoUrl}
+                                    disabled
+                                    value={formData.logoUrl ?? ""}
                                     onChange={handleChange}
-                                    className="block w-full pl-10 sm:pl-12 pr-3 py-2.5 sm:py-3 border-2 border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent text-sm sm:text-base"
+                                    className="cursor-not-allowed block w-full pl-10 sm:pl-12 pr-3 py-2.5 sm:py-3 border-2 border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent text-sm sm:text-base"
                                 />
                             </div>
                         </div>
@@ -180,9 +199,10 @@ const StationConfigPage = () => {
                                     type="text"
                                     id="streamingUrl"
                                     name="streamingUrl"
-                                    value={formData.streamingUrl}
+                                    disabled
+                                    value={formData.streamingUrl ?? ""}
                                     onChange={handleChange}
-                                    className="block w-full pl-10 sm:pl-12 pr-3 py-2.5 sm:py-3 border-2 border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent text-sm sm:text-base"
+                                    className=" cursor-not-allowed block w-full pl-10 sm:pl-12 pr-3 py-2.5 sm:py-3 border-2 border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent text-sm sm:text-base"
                                 />
                             </div>
                         </div>

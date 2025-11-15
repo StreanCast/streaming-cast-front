@@ -21,7 +21,7 @@ const AccountConfigPage = () => {
     useEffect(() => {
         const fetchUserData = async () => {
             try {
-                const response = await fetch(`${BASE_URL}/api/users/me`, {
+                const response = await fetch(`${BASE_URL}/user/listAccountInformation`, {
                     headers: {
                         "Authorization": `Bearer ${token}`,
                     }
@@ -37,7 +37,7 @@ const AccountConfigPage = () => {
 
                 const data = await response.json();
                 setFormData({
-                    username: data.username,
+                    username: data.name,
                     email: data.email,
                     password: '',
                     confirmPassword: ''
@@ -66,15 +66,16 @@ const AccountConfigPage = () => {
         }
 
         try {
-            const response = await fetch(`${BASE_URL}/api/users/me`, {
+            const response = await fetch(`${BASE_URL}/user/updateAccountInformation`, {
                 method: 'PUT',
                 headers: {
                     'Content-Type': 'application/json',
                     "Authorization": `Bearer ${token}`,
                 },
                 body: JSON.stringify({
-                    username: formData.username,
                     email: formData.email,
+                    flat: null,
+                    name: formData.username,
                     password: formData.password,
                 })
             });
