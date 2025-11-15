@@ -13,7 +13,7 @@ export default function FileManager() {
     const [isUploading, setIsUploading] = useState(false);
     const [progress, setProgress] = useState(0);
     const [message, setMessage] = useState("");
-
+    
     const token = localStorage.getItem("token");
     const stationId = localStorage.getItem("stationId");
 
@@ -86,7 +86,7 @@ export default function FileManager() {
     const fetchFiles = async (path = "") => {
 
         try {
-            const response = await fetch(`http://136.112.234.6:8080/api/files/${stationId}/list/audios?path=${path}`, {
+            const response = await fetch(`${BASE_URL}/api/files/${stationId}/list/audios?path=${path}`, {
                 headers: {
                     "Authorization": `Bearer ${token}`,
                     "Content-Type": "application/json"
@@ -149,7 +149,7 @@ export default function FileManager() {
 
     async function handleNewFolder(folderName) {
         try {
-            const response = await fetch(`http://136.112.234.6:8080/api/files/${stationId}/newFolder?path=music/${currentPath}/${folderName}`, {
+            const response = await fetch(`${BASE_URL}/api/files/${stationId}/newFolder?path=music/${currentPath}/${folderName}`, {
                 method: "POST",
                 headers: {
                     "Authorization": `Bearer ${token}`,
@@ -231,18 +231,9 @@ export default function FileManager() {
                     </div>
                 )}{/* Mensagem final */}
                 {message && (
-                    <div className="w-full flex gap-3 justify-center items-center pb-5">
-                        <p
-                            className={`text-lg mt-3 ${message.includes("sucesso")
-                                ? "text-green-600"
-                                : "text-red-600"
-                                }`}
-                        >
-                            {message}
-                        </p>
-                    </div>
-                )}
-
+                    <div className="m-6 p-4 rounded-xl bg-blue-100 text-blue-700 shadow">
+                        {message}
+                    </div> )}
                 {/* Texto de progresso */}
 
                 <div className="w-full flex flex-wrap justify-between gap-3">
