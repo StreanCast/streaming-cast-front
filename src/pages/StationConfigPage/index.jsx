@@ -29,7 +29,7 @@ const StationConfigPage = () => {
                     }
                 });
 
-                if (response.status === 403) {
+                if (response.status === 403 || response.status === 401) {
                     window.location.href = "/login";
                 }
 
@@ -90,7 +90,7 @@ const StationConfigPage = () => {
                 })
             });
 
-            if (response.status === 403) {
+            if (response.status === 403 || response.status === 401) {
                 window.location.href = "/login";
             }
 

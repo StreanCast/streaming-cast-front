@@ -103,7 +103,7 @@ export default function PlaylistPage() {
                     playList: paths
                 })
             });
-            if (response.status === 403) {
+            if (response.status === 403 || response.status === 401) {
                 // Token expirado → redireciona para login
                 window.location.href = "/login";
             }
@@ -129,10 +129,11 @@ export default function PlaylistPage() {
                 },
                 body: JSON.stringify({ playList: paths })
             });
-            if (response.status === 403) {
+            if (response.status === 403 || response.status === 401) {
                 // Token expirado → redireciona para login
-                //window.location.href = "/login";
+                window.location.href = "/login";
             }
+
             if (!response.ok) throw new Error("Erro ao salvar arquivos");
             fetchFilesPlaylists();
             setPlaylistName("");
@@ -152,7 +153,7 @@ export default function PlaylistPage() {
                     "Content-Type": "application/json"
                 }
             });
-            if (response.status === 403) {
+            if (response.status === 403 || response.status === 401) {
                 // Token expirado → redireciona para login
                 window.location.href = "/login";
             }
@@ -231,7 +232,7 @@ export default function PlaylistPage() {
                     "Content-Type": "application/json"
                 }
             });
-            if (response.status === 403) {
+            if (response.status === 403 || response.status === 401) {
                 // Token expirado → redireciona para login
                 window.location.href = "/login";
             }
@@ -251,7 +252,7 @@ export default function PlaylistPage() {
                     "Content-Type": "application/json"
                 }
             });
-            if (response.status === 403) {
+            if (response.status === 403 || response.status === 401) {
                 // Token expirado → redireciona para login
                 window.location.href = "/login";
             }

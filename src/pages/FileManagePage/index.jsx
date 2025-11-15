@@ -92,7 +92,7 @@ export default function FileManager() {
                     "Content-Type": "application/json"
                 }
             });
-            if (response.status === 403) {
+            if (response.status === 403 || response.status === 401) {
                 // Token expirado → redireciona para login
                 window.location.href = "/login";
             }
@@ -156,7 +156,7 @@ export default function FileManager() {
                     "Content-Type": "application/json"
                 }
             });
-            if (response.status === 403) {
+            if (response.status === 403 || response.status === 401) {
                 // Token expirado → redireciona para login
                 window.location.href = "/login";
             }
