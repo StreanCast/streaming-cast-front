@@ -4,12 +4,14 @@ import HomePage from "../pages/HomePage";
 import NotFound from "../pages/NotFound";
 import FileManager from "../pages/FileManagePage";
 import LoginPage from "../pages/LoginPage";
-import RegisterPage from "../pages/RegisterPage";
+import RegisterUserPage from "../pages/RegisterUserPage";
+import RegisterStationPage from "../pages/RegisterStationPage";
 import AutoDj from "../pages/AutoDjPage";
 import AccountConfigPage from "../pages/AccountConfigPage";
 import LiveTransmissionPage from "../pages/LiveTransmissionPage";
 import PlaylistsPage from "../pages/PlaylistsPage";
 import StationConfigPage from "../pages/StationConfigPage";
+import ListenersPage from "../pages/ListenersPage";
 
 const Paths = () => {
     return (
@@ -37,7 +39,9 @@ const Paths = () => {
                     <Route index element={<StationConfigPage />} />
                 </Route>
                 <Route path="/login" element={<LoginPage />} />
-                <Route path="/register" element={<RegisterPage />} />
+                <Route path="/register-user" element={<RegisterUserPage />} />
+                <Route path="/register-station" element={<RegisterStationPage />} />
+                <Route path="/listeners" element={<ListenersPage />} />
                 <Route path="*" element={<NotFound />} />
             </Routes>
         </BrowserRouter>

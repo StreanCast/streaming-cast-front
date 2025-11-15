@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { Mail, Lock, Eye, EyeOff } from 'lucide-react';
+import { BASE_URL } from "../../config";
 
 export default function LoginPage() {
   const [formData, setFormData] = useState({
@@ -8,6 +9,7 @@ export default function LoginPage() {
     rememberMe: false
   });
   const [showPassword, setShowPassword] = useState(false);
+  const [errorMessage, setErrorMessage] = useState("");
 
   const handleChange = (e) => {
     const { name, value, type, checked } = e.target;
@@ -17,10 +19,36 @@ export default function LoginPage() {
     });
   };
 
+  const fetchLogin = async () => {
+    try {
+      const response = await fetch(`${BASE_URL}/auth`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json"
+        },
+        body: JSON.stringify({
+          email: formData.email,
+          password: formData.password
+        })
+      });
+      if (!response.ok) {
+        setErrorMessage("Email ou senha inválidos.");
+        return;
+      }
+      const data = await response.json(); // converte corretamente para JSON
+      localStorage.setItem("token", data.token);
+      localStorage.setItem("stationId", data.stationId);
+      window.location.href = "/home";
+    } catch (error) {
+      setErrorMessage("Erro ao conectar ao servidor.");
+    }
+
+  };
+
+
   const handleSubmit = (e) => {
     e.preventDefault();
-    console.log('Login:', formData);
-    alert('Login realizado com sucesso!');
+    fetchLogin();
   };
 
   return (
@@ -38,6 +66,11 @@ export default function LoginPage() {
 
         {/* Form Card */}
         <div className="bg-white rounded-lg p-6 sm:p-8 shadow-xl">
+          {errorMessage && (
+            <div className="mb-4 p-3 rounded-lg bg-red-100 border border-red-300 text-red-700 text-sm">
+              {errorMessage}
+            </div>
+          )}
           <form onSubmit={handleSubmit} className="space-y-5">
             {/* Email Field */}
             <div>
@@ -76,7 +109,7 @@ export default function LoginPage() {
                   name="password"
                   value={formData.password}
                   onChange={handleChange}
-                  placeholder="••••••••"
+                  placeholder="Digite sua senha"
                   className="block w-full pl-10 pr-12 py-3 bg-gray-50 border border-gray-300 rounded-lg text-gray-900 placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                   required
                 />
@@ -125,7 +158,7 @@ export default function LoginPage() {
         <div className="text-center mt-6">
           <p className="text-gray-600 text-sm">
             Não tem uma conta?{' '}
-            <a href="/register" className="text-blue-500 hover:text-blue-400 font-medium">
+            <a href="/register-user" className="text-blue-500 hover:text-blue-400 font-medium">
               Cadastre-se
             </a>
           </p>
