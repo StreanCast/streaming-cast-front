@@ -41,7 +41,7 @@ const Paths = () => {
                 <Route path="/login" element={<LoginPage />} />
                 <Route path="/register-user" element={<RegisterUserPage />} />
                 <Route path="/register-station" element={<RegisterStationPage />} />
-                <Route path="/listeners" element={<ListenersPage />} />
+                <Route path="/:stationId/listeners" element={<ListenersPage />} />
                 <Route path="*" element={<NotFound />} />
             </Routes>
         </BrowserRouter>
