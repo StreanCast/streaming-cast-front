@@ -46,6 +46,7 @@ export default function RegisterStationPage() {
         window.location.href = "/login";
       }
       if (!response.ok) {
+        console.log(response.message());
         setErrorMessage(`Falha ao criar rádio.`);
         return;
       }
