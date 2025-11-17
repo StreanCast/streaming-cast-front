@@ -6,7 +6,7 @@ const Dashboard = () => {
     return (
         <>
 
-            <main className="flex-1 p-8 bg-gray-50">
+            <main className="flex-1 p-8 bg-gray-50 min-h-screen">
                 <div className="flex justify-between items-center mb-8">
                     <h2 className="text-3xl font-bold text-gray-800">Dashboard</h2>
                     <div className="flex items-center gap-4">
