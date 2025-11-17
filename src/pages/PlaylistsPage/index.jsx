@@ -1,6 +1,7 @@
 import { useState, useRef, useEffect } from "react";
 import { Download, Trash, Pencil, List, Music, Folder, CornerDownLeft, CircleX, MoveRight } from "lucide-react";
 import { BASE_URL } from "../../config";
+import LoadingModal from '../../components/LoadingModal';
 
 export default function PlaylistPage() {
     const [filesPlaylist, setFilesPlaylist] = useState([]);
@@ -18,8 +19,9 @@ export default function PlaylistPage() {
     const [isCreateNamePlaylist, setIsCreateNamePlaylist] = useState(false);
     const [playlistName, setPlaylistName] = useState("");
     const [uploadResult, setUploadResult] = useState(null);
-    const [isDownloading,setIsDownloading] = useState(false);
-    
+    const [isDownloading, setIsDownloading] = useState(false);
+    const [loading, setLoading] = useState(true);
+
     const token = localStorage.getItem("token");
 
     const openFolder = (file) => {
@@ -190,60 +192,60 @@ export default function PlaylistPage() {
 
 
 
-      const handleDownload = async (file) => {
-    try {
-        const response = await fetch(`${BASE_URL}${file.downloadLink}`, {
-            headers: {
-                "Authorization": `Bearer ${token}`,
-                "Content-Type": "application/json"
+    const handleDownload = async (file) => {
+        try {
+            const response = await fetch(`${BASE_URL}${file.downloadLink}`, {
+                headers: {
+                    "Authorization": `Bearer ${token}`,
+                    "Content-Type": "application/json"
+                }
+            });
+
+            if (!response.ok) throw new Error("Erro ao baixar o arquivo");
+
+            const contentLength = response.headers.get("Content-Length");
+            if (!contentLength) {
+                console.warn("Não foi possível obter o tamanho do arquivo");
             }
-        });
 
-        if (!response.ok) throw new Error("Erro ao baixar o arquivo");
+            const total = contentLength ? parseInt(contentLength, 10) : 0;
+            let loaded = 0;
 
-        const contentLength = response.headers.get("Content-Length");
-        if (!contentLength) {
-            console.warn("Não foi possível obter o tamanho do arquivo");
-        }
+            const reader = response.body.getReader();
+            const chunks = [];
+            while (true) {
+                const { done, value } = await reader.read();
+                if (done) break;
+                chunks.push(value);
+                loaded += value.length;
+                setIsDownloading(true);
+                if (total) {
+                    const progress = (loaded / total) * 100;
+                    setProgress(progress.toFixed(2));
+                    // Aqui você pode atualizar uma barra de progresso no seu estado React
 
-        const total = contentLength ? parseInt(contentLength, 10) : 0;
-        let loaded = 0;
-
-        const reader = response.body.getReader();
-        const chunks = [];
-        while (true) {
-            const { done, value } = await reader.read();
-            if (done) break;
-            chunks.push(value);
-            loaded += value.length;
-            setIsDownloading(true);
-            if (total) {
-                const progress = (loaded / total) * 100;
-                setProgress(progress.toFixed(2));
-                // Aqui você pode atualizar uma barra de progresso no seu estado React
-
-                if(progress === 100){
-                    setIsDownloading(false);
+                    if (progress === 100) {
+                        setIsDownloading(false);
+                    }
                 }
             }
+
+            // Concatena os chunks e cria o blob
+            const blob = new Blob(chunks);
+            const url = window.URL.createObjectURL(blob);
+
+            const a = document.createElement("a");
+            a.href = url;
+            a.download = file.name;
+            document.body.appendChild(a);
+            a.click();
+            a.remove();
+            window.URL.revokeObjectURL(url);
+
+        } catch (err) {
+            console.error("Erro ao baixar:", err);
         }
-
-        // Concatena os chunks e cria o blob
-        const blob = new Blob(chunks);
-        const url = window.URL.createObjectURL(blob);
-
-        const a = document.createElement("a");
-        a.href = url;
-        a.download = file.name;
-        document.body.appendChild(a);
-        a.click();
-        a.remove();
-        window.URL.revokeObjectURL(url);
-
-    } catch (err) {
-        console.error("Erro ao baixar:", err);
-    }
-};
+    };
 
 
     async function fetchFilesPlaylists() {
@@ -262,8 +264,10 @@ export default function PlaylistPage() {
             if (!response.ok) throw new Error("Erro ao buscar arquivos");
             const data = await response.json(); // converte corretamente para JSON
             setFilesPlaylist(data);
+            setLoading(false);
         } catch (error) {
             console.error("Erro ao buscar arquivos:", error);
+            setLoading(false);
         }
     };
 
@@ -367,11 +371,14 @@ export default function PlaylistPage() {
 
     return (
         <div className="min-h-screen p-6 flex flex-col bg-white w-full h-screen">
+            {loading && (
+                <LoadingModal show={loading} />
+            )}
             <h1 className="text-3xl font-bold mb-6 text-slate-800">Playlists</h1>
 
             <div className="rounded-lg border-3 p-5" style={{ borderColor: "#DDDDDD" }}>
                 {/* Barra de progresso */}
-                {isUploading || isDownloading &&  (
+                {isUploading || isDownloading && (
                     <div className="w-full flex gap-3 justify-center items-center pb-5">
                         <div className="w-full bg-gray-200 rounded-full h-4 mt-2">
                             <div

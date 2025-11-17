@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import { User, Mail, Lock } from 'lucide-react';
-import { BASE_URL } from '../../config';
+import { BASE_URL } from "../../config";
+import LoadingModal from '../../components/LoadingModal';
 
 const AccountConfigPage = () => {
     const [formData, setFormData] = useState({
@@ -10,40 +11,42 @@ const AccountConfigPage = () => {
         confirmPassword: ''
     });
     const [message, setMessage] = useState("");
+    const [loading, setLoading] = useState(true);
 
     const token = localStorage.getItem("token");
 
-    useEffect(() => {
-        const fetchUserData = async () => {
-            try {
-                const response = await fetch(`${BASE_URL}/user/listAccountInformation`, {
-                    headers: {
-                        "Authorization": `Bearer ${token}`,
-                    }
-                });
-
-                if (response.status === 403 || response.status === 401) {
-                    window.location.href = "/login";
+    const fetchUserData = async () => {
+        try {
+            const response = await fetch(`${BASE_URL}/user/listAccountInformation`, {
+                headers: {
+                    "Authorization": `Bearer ${token}`,
                 }
+            });
 
-                if (!response.ok) {
-                    throw new Error('Erro ao buscar dados do usuário');
-                }
-
-                const data = await response.json();
-                setFormData({
-                    username: data.name,
-                    email: data.email,
-                    password: '',
-                    confirmPassword: ''
-                });
-
-            } catch (error) {
-                console.error(error);
-                setMessage("Erro ao carregar dados do usuário.");
+            if (response.status === 403 || response.status === 401) {
+                window.location.href = "/login";
             }
-        };
 
+            if (!response.ok) {
+                setLoading(false);
+                throw new Error('Erro ao buscar dados do usuário');
+            }
+
+            const data = await response.json();
+            setFormData({
+                username: data.name,
+                email: data.email,
+                password: '',
+                confirmPassword: ''
+            });
+            setLoading(false);
+        } catch (error) {
+            setLoading(false);
+            setMessage("Erro ao carregar dados do usuário.");
+        }
+    };
+
+    useEffect(() => {
         fetchUserData();
     }, [token]);
 
@@ -93,7 +96,10 @@ const AccountConfigPage = () => {
 
     return (
         <div className="min-h-screen p-6 flex flex-col bg-white w-full">
-            <h1 className="text-3xl font-bold mb-6 text-slate-800">Configuração de Conta</h1>
+            {loading && (
+                <LoadingModal show={loading} />
+            )}
+            <h1 className="text-3xl font-bold mb-6 text-slate-800">Configuração de conta</h1>
 
             <div className="rounded-lg border-3 p-5" style={{ borderColor: "#DDDDDD" }}>
                 {message && (

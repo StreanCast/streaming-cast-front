@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import { Radio, FileText, Image, Link as LinkIcon, BarChart } from 'lucide-react';
 import { BASE_URL } from '../../config';
+import LoadingModal from '../../components/LoadingModal';
 
 const StationConfigPage = () => {
     const [formData, setFormData] = useState({
@@ -12,42 +13,45 @@ const StationConfigPage = () => {
     });
 
     const [message, setMessage] = useState("");
+    const [loading, setLoading] = useState(true);
 
     const token = localStorage.getItem("token");
-    
-    useEffect(() => {
-        const fetchStationData = async () => {
-            try {
-                const response = await fetch(`${BASE_URL}/api/infoStationReader`, {
-                    headers: {
-                        "Authorization": `Bearer ${token}`,
-                    }
-                });
 
-                if (response.status === 403 || response.status === 401) {
-                    window.location.href = "/login";
+    const fetchStationData = async () => {
+        try {
+            const response = await fetch(`${BASE_URL}/api/infoStationReader`, {
+                headers: {
+                    "Authorization": `Bearer ${token}`,
                 }
+            });
 
-                if (!response.ok) {
-                    throw new Error('Erro ao buscar dados da estação');
-                }
-
-                const data = await response.json();
-                setFormData({
-                    stationName: data.data.streamName,
-                    description: data.data.streamDescription,
-                    logoUrl: data.data.logoUrl,
-                    streamingUrl: `${data.data.transmissionIpServer}:${data.data.transmissionPort}${data.data.transmissionMount}`,
-                    bitrate: data.data.bitrate
-
-                });
-
-            } catch (error) {
-                console.error(error);
-                setMessage("Erro ao carregar dados da estação.");
+            if (response.status === 403 || response.status === 401) {
+                window.location.href = "/login";
             }
-        };
 
+            if (!response.ok) {
+                throw new Error('Erro ao buscar dados da estação');
+            }
+
+            const data = await response.json();
+            setFormData({
+                stationName: data.data.streamName,
+                description: data.data.streamDescription,
+                logoUrl: data.data.logoUrl,
+                streamingUrl: `${data.data.transmissionIpServer}:${data.data.transmissionPort}${data.data.transmissionMount}`,
+                bitrate: data.data.bitrate
+
+            });
+
+            setLoading(false);
+
+        } catch (error) {
+            setLoading(false);
+            setMessage("Erro ao carregar dados da estação.");
+        }
+    };
+
+    useEffect(() => {
         fetchStationData();
     }, [token]);
 
@@ -103,7 +107,10 @@ const StationConfigPage = () => {
 
     return (
         <div className="min-h-screen p-6 flex flex-col bg-white w-full">
-            <h1 className="text-3xl font-bold mb-6 text-slate-800">Configuração da Estação</h1>
+            {loading && (
+                <LoadingModal show={loading} />
+            )}
+            <h1 className="text-3xl font-bold mb-6 text-slate-800">Configuração da estação</h1>
 
             <div className="rounded-lg border-3 p-5" style={{ borderColor: "#DDDDDD" }}>
                 {message && (
