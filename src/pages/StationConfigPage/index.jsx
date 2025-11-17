@@ -14,16 +14,11 @@ const StationConfigPage = () => {
     const [message, setMessage] = useState("");
 
     const token = localStorage.getItem("token");
-    const stationId = localStorage.getItem("stationId");
-
-    if (!stationId || stationId === "null") {
-        window.location.href = "/login";
-    }
-
+    
     useEffect(() => {
         const fetchStationData = async () => {
             try {
-                const response = await fetch(`${BASE_URL}/api/${stationId}/infoStationReader`, {
+                const response = await fetch(`${BASE_URL}/api/infoStationReader`, {
                     headers: {
                         "Authorization": `Bearer ${token}`,
                     }
@@ -54,7 +49,7 @@ const StationConfigPage = () => {
         };
 
         fetchStationData();
-    }, [token, stationId]);
+    }, [token]);
 
     const handleChange = (e) => {
         setFormData({

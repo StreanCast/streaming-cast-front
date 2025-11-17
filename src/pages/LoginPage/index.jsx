@@ -10,7 +10,6 @@ export default function LoginPage() {
   });
   const [showPassword, setShowPassword] = useState(false);
   const [errorMessage, setErrorMessage] = useState("");
-  const stationId = localStorage.getItem("stationId");
 
   const handleChange = (e) => {
     const { name, value, type, checked } = e.target;
@@ -37,8 +36,9 @@ export default function LoginPage() {
         return;
       }
       const data = await response.json(); // converte corretamente para JSON
-      localStorage.setItem("token", data.token);
-      if (stationId === "null" || stationId === null) {
+      localStorage.setItem("token", data?.token);
+      localStorage.setItem("stationId", data?.stationId);
+      if (data.stationId === "null" || data.stationId === null) {
         window.location.href = "/register-station";
         return;
       }

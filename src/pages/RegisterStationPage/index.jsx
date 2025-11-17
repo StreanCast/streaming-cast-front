@@ -41,17 +41,18 @@ export default function RegisterStationPage() {
           password: formData.password
         })
       });
-      if (response.status === 403 || response.status === 401) {
-        // Token expirado → redireciona para login
-        window.location.href = "/login";
-      }
+      // if (response.status === 403 || response.status === 401) {
+      //   // Token expirado → redireciona para login
+      //   window.location.href = "/login";
+      // }
       if (!response.ok) {
-        console.log(response.message());
-        setErrorMessage(`Falha ao criar rádio.`);
+        const errorData = await response.json();
+        const { password, name } = errorData || {};
+        const messages = [password ? password : null, name ? name : null].filter(Boolean); // remove os null/undefined
+        const errorMessage = messages.join(". ");
+        setErrorMessage(errorMessage);
         return;
       }
-      const data = await response.json(); // converte corretamente para JSON
-      localStorage.setItem("stationId", data.data.stationId);
       setShowSuccessModal(true);
     } catch (error) {
       setErrorMessage("Erro ao conectar ao servidor.");

@@ -42,7 +42,10 @@ export default function RegisterPage() {
       });
       if (!response.ok) {
         const errorData = await response.json();
-        setErrorMessage(`Falha ao realizar cadastro. ${errorData.mensage}`);
+        const { password, email, name } = errorData || {};
+        const messages = [password ? password : null,email ? email : null, name ? name : null].filter(Boolean); // remove os null/undefined
+        const errorMessage = messages.join(". ");
+        setErrorMessage(errorMessage);
         return;
       }
       setShowSuccessModal(true);

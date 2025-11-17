@@ -12,20 +12,15 @@ export default function PlaylistPage() {
     const [currentPath, setCurrentPath] = useState(""); // caminho da pasta atual, vazio = raiz
     const [isUploading, setIsUploading] = useState(false);
     const [progress, setProgress] = useState(0);
-    const [message, setMessage] = useState("");
+    const [mensage, setMessage] = useState("");
     const [selected, setSelected] = useState(null);
     const [isModalEditOpen, setIsModalEditOpen] = useState(false);
     const [isCreateNamePlaylist, setIsCreateNamePlaylist] = useState(false);
     const [playlistName, setPlaylistName] = useState("");
     const [uploadResult, setUploadResult] = useState(null);
-
-
+    const [isDownloading,setIsDownloading] = useState(false);
+    
     const token = localStorage.getItem("token");
-    const stationId = localStorage.getItem("stationId");
-
-    if (!stationId || stationId === "null") {
-        window.location.href = "/login";
-    }
 
     const openFolder = (file) => {
         if (file.isDirectory) {
@@ -76,6 +71,7 @@ export default function PlaylistPage() {
         setPlaylistName("");
         setIsModalEditOpen(false);
         setFilesAudioPlaylist([]);
+        setCurrentPath("");
     };
 
     const editPlaylist = (playlistName) => {
@@ -90,7 +86,7 @@ export default function PlaylistPage() {
     }
 
     async function fetchSavePlaylist() {
-        const paths = filesAudioPlaylist.map(item => `/servidores/${stationId}/${item.path}`);
+        const paths = filesAudioPlaylist.map(item => item.path);
         try {
             const response = await fetch(`${BASE_URL}/api/playlists/update`, {
                 method: "PUT",
@@ -117,9 +113,8 @@ export default function PlaylistPage() {
         }
     }
 
-    async function fetchSavePlaylistMater() {
-        const filtrado = filesPlaylist.filter(item => item.name != fileToDelete.name);
-        const paths = filtrado.map(item => item.name.replace(".m3u8", ""));
+    async function fetchSavePlaylistMater(paths) {
+        paths = paths.map(item => item.name.replace(".m3u8", ""));
         try {
             const response = await fetch(`${BASE_URL}/api/playlists/updateMaster`, {
                 method: "PUT",
@@ -147,7 +142,7 @@ export default function PlaylistPage() {
     async function fetchFilesMusic(path = "") {
 
         try {
-            const response = await fetch(`${BASE_URL}/api/files/${stationId}/list/audios?path=${path}`, {
+            const response = await fetch(`${BASE_URL}/api/files/list/audios?path=${path}`, {
                 headers: {
                     "Authorization": `Bearer ${token}`,
                     "Content-Type": "application/json"
@@ -169,7 +164,6 @@ export default function PlaylistPage() {
         if (!fileToDelete) return;
         closeModal();
         setFilesPlaylist(filesPlaylist.filter((f) => f.name !== fileToDelete.name));
-        fetchSavePlaylistMater();
 
         try {
             const response = await fetch(BASE_URL + fileToDelete.deleteLink, {
@@ -186,7 +180,8 @@ export default function PlaylistPage() {
             setFilesPlaylist(filesPlaylist.filter((f) => f.name !== fileToDelete.name));
             closeModal();
             setFilesAudioPlaylist(filesAudioPlaylist.filter((f) => f.name !== fileToDelete.name));
-            fetchSavePlaylistMater();
+            const filtrado = filesPlaylist.filter(item => item.name != fileToDelete.name);
+            fetchSavePlaylistMater(filtrado);
 
         } catch (err) {
             console.error("Erro ao excluir:", err);
@@ -195,38 +190,66 @@ export default function PlaylistPage() {
 
 
 
-    async function handleDownload(file) {
-        try {
-            const response = await fetch(`${BASE_URL}${file.downloadLink}`, {
-                headers: {
-                    "Authorization": `Bearer ${token}`,
-                    "Content-Type": "application/json"
-                }
-            });
+      const handleDownload = async (file) => {
+    try {
+        const response = await fetch(`${BASE_URL}${file.downloadLink}`, {
+            headers: {
+                "Authorization": `Bearer ${token}`,
+                "Content-Type": "application/json"
+            }
+        });
 
-            if (!response.ok) throw new Error("Erro ao baixar o arquivo");
+        if (!response.ok) throw new Error("Erro ao baixar o arquivo");
 
-            const blob = await response.blob();
-            const url = window.URL.createObjectURL(blob);
-
-            // Cria um link temporário para forçar o download
-            const a = document.createElement("a");
-            a.href = url;
-            a.download = file.name; // nome do arquivo
-            document.body.appendChild(a);
-            a.click();
-            a.remove();
-            window.URL.revokeObjectURL(url);
-        } catch (err) {
-            console.error("Erro ao baixar:", err);
+        const contentLength = response.headers.get("Content-Length");
+        if (!contentLength) {
+            console.warn("Não foi possível obter o tamanho do arquivo");
         }
-    };
+
+        const total = contentLength ? parseInt(contentLength, 10) : 0;
+        let loaded = 0;
+
+        const reader = response.body.getReader();
+        const chunks = [];
+        while (true) {
+            const { done, value } = await reader.read();
+            if (done) break;
+            chunks.push(value);
+            loaded += value.length;
+            setIsDownloading(true);
+            if (total) {
+                const progress = (loaded / total) * 100;
+                setProgress(progress.toFixed(2));
+                // Aqui você pode atualizar uma barra de progresso no seu estado React
+
+                if(progress === 100){
+                    setIsDownloading(false);
+                }
+            }
+        }
+
+        // Concatena os chunks e cria o blob
+        const blob = new Blob(chunks);
+        const url = window.URL.createObjectURL(blob);
+
+        const a = document.createElement("a");
+        a.href = url;
+        a.download = file.name;
+        document.body.appendChild(a);
+        a.click();
+        a.remove();
+        window.URL.revokeObjectURL(url);
+
+    } catch (err) {
+        console.error("Erro ao baixar:", err);
+    }
+};
 
 
     async function fetchFilesPlaylists() {
 
         try {
-            const response = await fetch(`${BASE_URL}/api/playlists/${stationId}/listMaster`, {
+            const response = await fetch(`${BASE_URL}/api/playlists/listMaster`, {
                 headers: {
                     "Authorization": `Bearer ${token}`,
                     "Content-Type": "application/json"
@@ -246,7 +269,7 @@ export default function PlaylistPage() {
 
     async function fetchAudioPlaylists(playlistName) {
         try {
-            const response = await fetch(`${BASE_URL}/api/playlists/${stationId}/listAudio?playlistName=${playlistName}.m3u8`, {
+            const response = await fetch(`${BASE_URL}/api/playlists/listAudio?playlistName=${playlistName}.m3u8`, {
                 headers: {
                     "Authorization": `Bearer ${token}`,
                     "Content-Type": "application/json"
@@ -348,7 +371,7 @@ export default function PlaylistPage() {
 
             <div className="rounded-lg border-3 p-5" style={{ borderColor: "#DDDDDD" }}>
                 {/* Barra de progresso */}
-                {isUploading && (
+                {isUploading || isDownloading &&  (
                     <div className="w-full flex gap-3 justify-center items-center pb-5">
                         <div className="w-full bg-gray-200 rounded-full h-4 mt-2">
                             <div

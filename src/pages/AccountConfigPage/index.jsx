@@ -12,11 +12,6 @@ const AccountConfigPage = () => {
     const [message, setMessage] = useState("");
 
     const token = localStorage.getItem("token");
-    const stationId = localStorage.getItem("stationId");
-
-    if (!stationId || stationId === "null") {
-        window.location.href = "/login";
-    }
 
     useEffect(() => {
         const fetchUserData = async () => {
