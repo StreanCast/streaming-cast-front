@@ -2,7 +2,7 @@ import { Volume2, Play, Headphones, HardDrive, Radio, Music } from 'lucide-react
 import StatusCard from '../../components/StatusCard'
 import ContentSection from '../../components/ContentSection'
 
-const Profile = () => {
+const Dashboard = () => {
     return (
         <>
 
@@ -205,4 +205,4 @@ const Profile = () => {
     );
 }
 
-export default Profile;
+export default Dashboard;

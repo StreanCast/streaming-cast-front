@@ -12,7 +12,7 @@ import LiveTransmissionPage from "../pages/LiveTransmissionPage";
 import PlaylistsPage from "../pages/PlaylistsPage";
 import StationConfigPage from "../pages/StationConfigPage";
 import ListenersPage from "../pages/ListenersPage";
-import Profile from "../pages/Profile";
+import Dashboard from "../pages/Dashboard";
 
 const Paths = () => {
     return (
@@ -20,7 +20,7 @@ const Paths = () => {
             <Routes>
                 <Route path="/" element={<SiteLayout />}>
                     <Route index element={<HomePage />} />
-                    <Route path="/profile" element={<Profile />} />
+                    <Route path="/dashboard" element={<Dashboard />} />
                     <Route index path="/auto-dj" element={<AutoDj />} />
                     <Route path="/playlists" element={<PlaylistsPage />} />
                     <Route path="/file-manager" element={<FileManager />} />
