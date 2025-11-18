@@ -7,14 +7,14 @@ const StatusCard = ({ title, icon: Icon, color, info, playlistMusic, artistMusic
     };
 
     return (
-        <div className={`bg-gradient-to-br ${colorClasses[color]} rounded-xl p-8 flex flex-col items-center justify-center gap-4 text-white shadow-lg hover:shadow-xl hover:-translate-y-1 transition-all`}>
+        <div className={`bg-gradient-to-br ${colorClasses[color]} rounded-xl p-8 flex flex-col items-center justify-center gap-4 text-white shadow-lg hover:shadow-xl hover:-translate-y-1 transition-all overflow-hidden`}>
             <h3 className="text-xl font-bold tracking-wide">{title}</h3>
             <Icon size={48} strokeWidth={2} />
             {info && <p className="text-base font-semibold">{info}</p>}
             <div className="flex flex-col items-center justify-center">
-                {playlistMusic && <p className="text-base">{"Playlist: "+playlistMusic}</p>}
-                {artistMusic && <p className="text-base">{artistMusic}</p>}
-                {titleMusic && <p className="text-base">{titleMusic}</p>}
+                {playlistMusic && <p className="text-base text-center truncate lg:w-40 md:w-40 sm:w-80 xl:w-80">{"Playlist: "+playlistMusic}</p>}
+                {titleMusic && <p className="text-base text-center truncate lg:w-40 md:w-40 sm:w-80 xl:w-80">{titleMusic}</p>}
+                {artistMusic && <p className="text-base text-center truncate lg:w-40 md:w-40 sm:w-80 xl:w-80">{artistMusic}</p>}
             </div>
         </div>
     );

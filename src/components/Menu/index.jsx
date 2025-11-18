@@ -1,9 +1,19 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { NavLink, useLocation } from "react-router-dom";
 import { LayoutDashboard, Play, List, Folders, RadioTower, Cog, ChevronLeft, ChevronRight } from "lucide-react";
 
 export default function Menu() {
     const [isExpanded, setIsExpanded] = useState(true);
+
+    useEffect(() => {
+        const media = window.matchMedia("(min-width: 768px)");
+        // Define o valor inicial
+        setIsExpanded(media.matches);
+        // Listener para quando a tela mudar
+        const listener = (event) => setIsExpanded(event.matches);
+        media.addEventListener("change", listener);
+        return () => media.removeEventListener("change", listener);
+    }, []);
 
     return (
         <div className={`relative flex flex-col pt-5 border-r border-gray-300 bg-white transition-all duration-300 h-screen overflow-y-auto ${isExpanded ? 'w-80 pl-5 pr-2' : 'w-20 pl-3 pr-3'}`}>
@@ -14,8 +24,8 @@ export default function Menu() {
                         const location = useLocation();
                         const active = isActive || location.pathname === "/";
                         return `flex gap-3 p-3 items-center font-semibold text-lg rounded-md whitespace-nowrap overflow-hidden ${active
-                                ? "bg-blue-500 text-white"
-                                : "text-slate-800 hover:bg-blue-500 hover:text-white"
+                            ? "bg-blue-500 text-white"
+                            : "text-slate-800 hover:bg-blue-500 hover:text-white"
                             }`;
                     }}
                 >

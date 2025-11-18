@@ -19,7 +19,6 @@ const Dashboard = () => {
     const [infoServer, setInfoServer] = useState({});
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
-    const [showPassword, setShowPassword] = useState(false);
     const [metadataAudio, setMetadataAudio] = useState({});
     const [serverStatus, setServerStatus] = useState({});
 
@@ -159,18 +158,18 @@ const Dashboard = () => {
                 </div>
 
                 {/* Status Cards */}
-                <div className="grid grid-cols-3 gap-6 mb-8">
+                <div className="grid sm:grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-8">
                     <StatusCard title="NO AR" icon={Radio} color="green" />
-                    {serverStatus.autoDj && (
-                        <StatusCard title="AUTO-DJ LIGADO" icon={Volume2} color="blue" titleMusic={metadataAudio.title} playlistMusic={metadataAudio.playlistName} artistMusic={metadataAudio.artist} />
-                    )}{!serverStatus.autoDj && (
+                    {serverStatus?.autoDj && (
+                        <StatusCard title="AUTO-DJ LIGADO" icon={Volume2} color="blue" titleMusic={metadataAudio?.title} playlistMusic={metadataAudio?.playlistName} artistMusic={metadataAudio.artist} />
+                    )}{!serverStatus?.autoDj && (
                         <StatusCard title="AUTO-DJ DESLIGADO" icon={Volume2} color="red" />
                     )}
                     <StatusCard title="OUVINTES" icon={Headphones} color="orange" info={`Online: ${serverStatus?.listeners ? serverStatus.listeners : "0"}`} />
                 </div>
 
                 {/* Content Sections */}
-                <div className="grid grid-cols-2 gap-6 mb-6 items-stretch">
+                <div className="grid md:grid-cols-1 lg:grid-cols-2 gap-6 mb-6 items-stretch">
                     <ContentSection title="ESPAÇO" className="bg-gray-50">
                         <div>
                             <div className="flex items-center gap-2 mb-2">
@@ -254,7 +253,7 @@ const Dashboard = () => {
                     </ContentSection>
                 </div >
 
-                <div className="grid grid-cols-2 gap-6 items-stretch">
+                <div className="grid md:grid-cols-1 lg:grid-cols-2 gap-6 items-stretch">
                     <ContentSection title="AUTO DJ">
                         <div>
                             <div className="flex items-center gap-2 mb-2">
