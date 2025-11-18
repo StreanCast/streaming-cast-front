@@ -42,7 +42,7 @@ export default function LoginPage() {
         window.location.href = "/register-station";
         return;
       }
-      window.location.href = "/home";
+      window.location.href = "/dashboard";
     } catch (error) {
       setErrorMessage("Erro ao conectar ao servidor.");
     }

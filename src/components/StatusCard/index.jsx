@@ -1,8 +1,9 @@
-const StatusCard = ({ title, icon: Icon, color, info }) => {
+const StatusCard = ({ title, icon: Icon, color, info, playlistMusic, artistMusic, titleMusic }) => {
     const colorClasses = {
         green: "from-green-500 to-green-600",
         blue: "from-blue-500 to-blue-600",
         orange: "from-orange-400 to-orange-500",
+        red: "from-red-400 to-red-500",
     };
 
     return (
@@ -10,6 +11,11 @@ const StatusCard = ({ title, icon: Icon, color, info }) => {
             <h3 className="text-xl font-bold tracking-wide">{title}</h3>
             <Icon size={48} strokeWidth={2} />
             {info && <p className="text-base font-semibold">{info}</p>}
+            <div className="flex flex-col items-center justify-center">
+                {playlistMusic && <p className="text-base">{"Playlist: "+playlistMusic}</p>}
+                {artistMusic && <p className="text-base">{artistMusic}</p>}
+                {titleMusic && <p className="text-base">{titleMusic}</p>}
+            </div>
         </div>
     );
 };

@@ -92,7 +92,7 @@ export default function ListenersPage() {
           <img
             src={`data:image/png;base64,${metadataAudio.imageAlbum}`}
             alt="Capa"
-            className="w-40 h-40 mx-auto rounded-xl shadow-lg mb-4 object-cover"
+            className="w-50 h-50 mx-auto rounded-xl shadow-lg mb-4 object-cover"
           />
         )}
 

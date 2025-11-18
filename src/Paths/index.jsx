@@ -1,6 +1,5 @@
 import { BrowserRouter, Route, Routes } from "react-router-dom";
 import SiteLayout from "../layout/SiteLayout";
-import HomePage from "../pages/HomePage";
 import NotFound from "../pages/NotFound";
 import FileManager from "../pages/FileManagePage";
 import LoginPage from "../pages/LoginPage";
@@ -19,13 +18,14 @@ const Paths = () => {
         <BrowserRouter>
             <Routes>
                 <Route path="/" element={<SiteLayout />}>
-                    <Route index element={<HomePage />} />
+                    <Route index element={<Dashboard />} />
                     <Route path="/dashboard" element={<Dashboard />} />
-                    <Route index path="/auto-dj" element={<AutoDj />} />
+                    <Route path="/auto-dj" element={<AutoDj />} />
                     <Route path="/playlists" element={<PlaylistsPage />} />
                     <Route path="/file-manager" element={<FileManager />} />
                     <Route path="/live-transmission" element={<LiveTransmissionPage />} />
-                    <Route path="/station-config" element={<AccountConfigPage />} />
+                    <Route path="/station-config" element={<StationConfigPage />} />
+                    <Route path="/account-config" element={<AccountConfigPage />} />
                 </Route>
 
                 <Route path="/login" element={<LoginPage />} />
