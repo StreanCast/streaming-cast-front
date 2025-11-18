@@ -1,19 +1,31 @@
 import { useState } from "react";
-import { NavLink } from "react-router-dom";
+import { NavLink, useLocation } from "react-router-dom";
 import { LayoutDashboard, Play, List, Folders, RadioTower, Cog, ChevronLeft, ChevronRight } from "lucide-react";
 
 export default function Menu() {
     const [isExpanded, setIsExpanded] = useState(true);
 
     return (
-        <div className={`relative flex flex-col pt-5 border-r border-gray-300 bg-white transition-all duration-300 h-screen overflow-y-auto ${isExpanded ? 'w-72 pl-5' : 'w-20 pl-3'}`}>
+        <div className={`relative flex flex-col pt-5 border-r border-gray-300 bg-white transition-all duration-300 h-screen overflow-y-auto ${isExpanded ? 'w-80 pl-5 pr-2' : 'w-20 pl-3 pr-3'}`}>
             <div className="flex flex-col gap-1 flex-1">
-                <NavLink to="/dashboard" className={({ isActive }) =>
-                    `flex gap-3 p-3 items-center font-semibold text-lg rounded-md whitespace-nowrap overflow-hidden ${isActive
-                        ? "bg-blue-500 text-white"
-                        : "text-slate-800 hover:bg-blue-500 hover:text-white"}`}>
+
+                <NavLink
+                    to="/dashboard" className={({ isActive }) => {
+                        const location = useLocation();
+                        const active = isActive || location.pathname === "/";
+                        return `flex gap-3 p-3 items-center font-semibold text-lg rounded-md whitespace-nowrap overflow-hidden ${active
+                                ? "bg-blue-500 text-white"
+                                : "text-slate-800 hover:bg-blue-500 hover:text-white"
+                            }`;
+                    }}
+                >
                     <LayoutDashboard className="flex-shrink-0" />
-                    <span className={`transition-all duration-300 ${isExpanded ? 'opacity-100 translate-x-0' : 'opacity-0 -translate-x-4'}`}>Dashboard</span>
+                    <span
+                        className={`transition-all duration-300 ${isExpanded ? "opacity-100 translate-x-0" : "opacity-0 -translate-x-4"
+                            }`}
+                    >
+                        Dashboard
+                    </span>
                 </NavLink>
 
                 <NavLink to="/auto-dj" className={({ isActive }) =>

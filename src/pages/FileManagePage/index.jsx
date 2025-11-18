@@ -250,7 +250,7 @@ export default function FileManager() {
 
             <div className="rounded-lg border-3 p-5" style={{ borderColor: "#DDDDDD" }}>
                 {/* Barra de progresso */}
-                {isUploading || isDownloading && (
+                {(isUploading || isDownloading) && (
                     <div className="w-full flex gap-3 justify-center items-center pb-5">
                         <div className="w-full bg-gray-200 rounded-full h-4 mt-2">
                             <div
