@@ -56,7 +56,7 @@ export default function LiveTransmissionPage() {
   };
 
   return (
-    <main className="w-full">
+    <main className="mt-22 w-full">
       <div className='w-full flex-1 p-4 sm:p-6 lg:p-8'>
         {error && (
           <main className='w-full'>

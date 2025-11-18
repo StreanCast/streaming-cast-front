@@ -106,7 +106,7 @@ const StationConfigPage = () => {
     };
 
     return (
-        <div className="min-h-screen p-6 flex flex-col bg-white w-full">
+        <div className="mt-22 min-h-screen p-6 flex flex-col bg-white w-full">
             {loading && (
                 <LoadingModal show={loading} />
             )}

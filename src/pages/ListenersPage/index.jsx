@@ -10,6 +10,112 @@ export default function ListenersPage() {
   const audioRef = useRef(null);
   const { stationId } = useParams();
   const [metadataAudio, setMetadataAudio] = useState({});
+  const retryInterval = useRef(null);
+
+  // --- cria o áudio uma vez ---
+  const createAudio = () => {
+    const audio = new Audio(dataListeners.listenerUrl);
+    audioRef.current = audio;
+
+    audio.load();
+    audio
+      .play()
+      .then(() => {
+        setIsPlaying(true);
+      })
+      .catch(() => {
+        setIsPlaying(false);
+        onAudioEnded();
+      });
+
+    startListeners(audio);
+  };
+
+  // --- PLAY ---
+  const playAudio = () => {
+    if (!audioRef.current) {
+      createAudio();
+      return;
+    }
+
+    const audio = audioRef.current;
+    audio.load();
+    audio
+      .play()
+      .then(() => {
+        setIsPlaying(true);
+      })
+      .catch(() => {
+        setIsPlaying(false);
+        onAudioEnded();
+      });
+  };
+
+  // --- PAUSE ---
+  const pauseAudio = () => {
+    if (audioRef.current) {
+      audioRef.current.pause();
+      audioRef.current = null;
+    }
+  };
+
+  // --- toggle ---
+  const togglePlay = () => {
+    if (isPlaying) {
+      setIsPlaying(false);
+      pauseAudio();
+    } else {
+      playAudio();
+    }
+  };
+
+  // --- listeners do áudio ---
+  const startListeners = (audio) => {
+    audio.addEventListener("canplaythrough", () => {
+    });
+
+    audio.addEventListener(
+      "playing",
+      () => {
+        clearInterval(retryInterval.current);
+      },
+      { once: true }
+    );
+
+    audio.addEventListener("pause", () => {
+      setIsPlaying(false);
+    });
+
+    audio.addEventListener("ended", () => {
+      clearInterval(retryInterval.current);
+      setIsPlaying(false);
+      onAudioEnded();
+    });
+
+    audio.addEventListener("error", () => {
+      clearInterval(retryInterval.current);
+      playAudio();
+    });
+  };
+
+  // --- reconexão automática ---
+  const onAudioEnded = () => {
+    if (!retryInterval.current) {
+      retryInterval.current = setInterval(() => {
+        playAudio();
+      }, 5000);
+    }
+  };
+
+  // --- desmontar (ngOnDestroy) ---
+  useEffect(() => {
+    return () => {
+      if (audioRef.current) {
+        audioRef.current.pause();
+      }
+      clearInterval(retryInterval.current);
+    };
+  }, []);
 
   async function fetchListeners() {
     try {
@@ -62,17 +168,6 @@ export default function ListenersPage() {
     fetchMetadataAudio();
   }, []);
 
-  const togglePlay = () => {
-    if (!audioRef.current) return;
-
-    if (isPlaying) {
-      audioRef.current.pause();
-    } else {
-      audioRef.current.play();
-    }
-    setIsPlaying(!isPlaying);
-  };
-
   return (
     <div className="min-h-screen w-full bg-gradient-to-b from-blue-900 to-black text-white flex flex-col items-center p-6">
       <div className="text-center mt-10">
@@ -86,7 +181,6 @@ export default function ListenersPage() {
       </div>
 
       <div className="mt-10 bg-white/10 backdrop-blur-md p-6 rounded-2xl shadow-xl w-full max-w-md text-center">
-        <audio ref={audioRef} src={dataListeners.listenerUrl} />
 
         {metadataAudio?.imageAlbum && (
           <img
@@ -101,10 +195,7 @@ export default function ListenersPage() {
         <h2 className="text-xl font-semibold">{metadataAudio?.title}</h2>
         <p className="text-gray-300 mb-4">{metadataAudio?.artist}</p>
 
-        <button
-          onClick={togglePlay}
-          className="w-full py-3 rounded-xl bg-blue-600 hover:bg-blue-700 transition flex items-center justify-center gap-3 text-lg font-semibold mt-3"
-        >
+        <button onClick={togglePlay} className="w-full py-3 rounded-xl bg-blue-600 hover:bg-blue-700 transition flex items-center justify-center gap-3 text-lg font-semibold mt-3 cursor-pointer">
           {isPlaying ? (
             <><Pause className="w-6 h-6" /> Pausar</>
           ) : (

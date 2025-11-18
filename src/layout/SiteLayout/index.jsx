@@ -6,9 +6,9 @@ import Menu from "../../components/Menu";
 const SiteLayout = () => {
     return (
         <div className="flex h-screen overflow-hidden">
+            <Header />
             <Menu />
             <main className="flex-1 overflow-y-auto">
-                <Header />
                 <Outlet />
                 <Footer />
             </main>

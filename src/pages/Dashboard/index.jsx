@@ -133,28 +133,12 @@ const Dashboard = () => {
 
     return (
         <>
-            <main className="flex-1 p-8 bg-gray-50">
-
+            <main className="mt-22 flex-1 p-8 bg-gray-50">
                 <div className="flex justify-between items-center mb-8">
                     {loading && (
                         <LoadingModal show={loading} />
                     )}
                     <h2 className="text-3xl font-bold text-gray-800">Dashboard</h2>
-                    <div className="flex items-center gap-4">
-                        <button className="w-12 h-12 bg-blue-500 rounded-full flex items-center justify-center text-white hover:bg-blue-600 transition-colors">
-                            <Play size={20} fill="white" />
-                        </button>
-                        <button className="w-12 h-12 bg-blue-500 rounded-full flex items-center justify-center text-white hover:bg-blue-600 transition-colors">
-                            <Volume2 size={20} />
-                        </button>
-                        <input
-                            type="range"
-                            className="w-32 h-1.5 bg-gray-300 rounded-lg appearance-none cursor-pointer accent-blue-500"
-                            min="0"
-                            max="100"
-                            defaultValue="80"
-                        />
-                    </div>
                 </div>
 
                 {/* Status Cards */}

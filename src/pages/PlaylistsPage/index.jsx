@@ -370,7 +370,7 @@ export default function PlaylistPage() {
 
 
     return (
-        <div className="min-h-screen p-6 flex flex-col bg-white w-full h-screen">
+        <div className="mt-22 min-h-screen p-6 flex flex-col bg-white w-full h-screen">
             {loading && (
                 <LoadingModal show={loading} />
             )}

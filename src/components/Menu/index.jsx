@@ -16,7 +16,7 @@ export default function Menu() {
     }, []);
 
     return (
-        <div className={`relative flex flex-col pt-5 border-r border-gray-300 bg-white transition-all duration-300 h-screen overflow-y-auto ${isExpanded ? 'w-80 pl-5 pr-2' : 'w-20 pl-3 pr-3'}`}>
+        <div className={`relative mt-25 flex flex-col pt-5 border-r border-gray-300 bg-white transition-all duration-300 h-screen overflow-y-auto ${isExpanded ? 'w-80 pl-5 pr-2' : 'w-20 pl-3 pr-3'}`}>
             <div className="flex flex-col gap-1 flex-1">
 
                 <NavLink
@@ -89,7 +89,7 @@ export default function Menu() {
 
             <button
                 onClick={() => setIsExpanded(!isExpanded)}
-                className="flex items-center justify-center p-3 mb-5 text-slate-800 hover:bg-gray-100 rounded-md transition-colors"
+                className="flex items-center justify-center p-3 mb-30 text-slate-800 hover:bg-gray-100 rounded-md transition-colors"
                 aria-label={isExpanded ? "Retrair menu" : "Expandir menu"}
             >
                 {isExpanded ? <ChevronLeft size={24} /> : <ChevronRight size={24} />}
