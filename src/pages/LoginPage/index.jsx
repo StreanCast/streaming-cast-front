@@ -79,7 +79,7 @@ export default function LoginPage() {
             {/* Email Field */}
             <div>
               <label htmlFor="email" className="block text-gray-700 text-sm font-medium mb-2">
-                Email
+                Email*
               </label>
               <div className="relative">
                 <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
@@ -101,7 +101,7 @@ export default function LoginPage() {
             {/* Password Field */}
             <div>
               <label htmlFor="password" className="block text-gray-700 text-sm font-medium mb-2">
-                Senha
+                Senha*
               </label>
               <div className="relative">
                 <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">

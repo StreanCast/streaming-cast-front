@@ -6,14 +6,21 @@ import Player from "../Player";
 export default function Header() {
   const [open, setOpen] = useState(false);
   const [dataListeners, setDataListeners] = useState({});
-  const stationId = localStorage.getItem("stationId");
+  const token = localStorage.getItem("token");
 
   async function fetchListeners() {
     try {
-      const response = await fetch(`${BASE_URL}/listeners/${stationId}/listeners`);
+      const response = await fetch(`${BASE_URL}/api/getInfoState`, {
+                method: "GET",
+                headers: {
+                    "Authorization": `Bearer ${token}`,
+                    "Content-Type": "application/json"
+                }
+            });
       if (!response.ok) throw new Error("Erro ao puxar dados");
       const data = await response.json();
       setDataListeners(data);
+      localStorage.setItem("stationId", data.stationId);
     } catch (error) {
       console.error("Erro ao puxar dados da estação", error);
     }
@@ -30,7 +37,7 @@ export default function Header() {
   }, []);
 
   return (
-    <header className="bg-gray-50 shadow-md fixed z-200 w-full px-6 py-6 flex items-center justify-between">
+    <header className="bg-gray-50 shadow-md fixed z-5 w-full px-6 py-6 flex items-center justify-between">
       {/* Logo */}
       <h1 className="text-3xl font-bold text-gray-700">{dataListeners.stationName}</h1>
 

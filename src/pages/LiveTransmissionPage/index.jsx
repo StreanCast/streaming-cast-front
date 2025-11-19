@@ -56,8 +56,8 @@ export default function LiveTransmissionPage() {
   };
 
   return (
-    <main className="mt-22 w-full">
-      <div className='w-full flex-1 p-4 sm:p-6 lg:p-8'>
+    <main className="mt-22 w-full bg-gray-100">
+      <div className='w-full flex-1 p-8 sm:p-6 lg:p-8'>
         {error && (
           <main className='w-full'>
             <div className="w-full flex-1 p-4 sm:p-6 lg:p-8 flex items-center justify-center">
@@ -68,11 +68,8 @@ export default function LiveTransmissionPage() {
         {loading && (
           <LoadingModal show={loading} />
         )}
-        <div className="">
-          <h2 className="text-2xl sm:text-3xl font-bold text-gray-800 mb-6 sm:mb-8 tracking-wide">
-            Transmissão ao vivo
-          </h2>
-
+        <div>
+          <h2 className="text-3xl font-bold text-gray-800 mb-8"> Transmissão ao vivo </h2>
           <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6 sm:p-8 mb-8">
               <div className="bg-gray-600 rounded-lg flex items-center justify-center h-38 sm:h-54 md:h-70">
                 <p className="text-white text-lg sm:text-xl font-medium">Transmissão ao vivo!</p>

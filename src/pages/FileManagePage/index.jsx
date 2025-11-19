@@ -242,13 +242,13 @@ export default function FileManager() {
     };
 
     return (
-        <div className="mt-22 min-h-screen p-6 flex flex-col bg-white w-full">
+        <div className="mt-22 min-h-screen p-8 flex flex-col bg-gray-100 w-full">
             {loading && (
                 <LoadingModal show={loading} />
             )}
-            <h1 className="text-3xl font-bold mb-6 text-slate-800">Gerenciador de arquivos</h1>
+            <h1 className="text-3xl font-bold text-gray-800 mb-8">Gerenciador de arquivos</h1>
 
-            <div className="rounded-lg border-3 p-5" style={{ borderColor: "#DDDDDD" }}>
+            <div className="rounded-lg border-3 p-5 bg-white" style={{ borderColor: "#DDDDDD" }}>
                 {/* Barra de progresso */}
                 {(isUploading || isDownloading) && (
                     <div className="w-full flex gap-3 justify-center items-center pb-5">

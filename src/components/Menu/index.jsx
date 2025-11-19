@@ -18,7 +18,6 @@ export default function Menu() {
     return (
         <div className={`relative mt-25 flex flex-col pt-5 border-r border-gray-300 bg-white transition-all duration-300 h-screen overflow-y-auto ${isExpanded ? 'w-80 pl-5 pr-2' : 'w-20 pl-3 pr-3'}`}>
             <div className="flex flex-col gap-1 flex-1">
-
                 <NavLink
                     to="/dashboard" className={({ isActive }) => {
                         const location = useLocation();
@@ -26,14 +25,10 @@ export default function Menu() {
                         return `flex gap-3 p-3 items-center font-semibold text-lg rounded-md whitespace-nowrap overflow-hidden ${active
                             ? "bg-blue-500 text-white"
                             : "text-slate-800 hover:bg-blue-500 hover:text-white"
-                            }`;
-                    }}
-                >
+                            }`}}>
                     <LayoutDashboard className="flex-shrink-0" />
                     <span
-                        className={`transition-all duration-300 ${isExpanded ? "opacity-100 translate-x-0" : "opacity-0 -translate-x-4"
-                            }`}
-                    >
+                        className={`transition-all duration-300 ${isExpanded ? "opacity-100 translate-x-0" : "opacity-0 -translate-x-4" }`} >
                         Dashboard
                     </span>
                 </NavLink>

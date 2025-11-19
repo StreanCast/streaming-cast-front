@@ -65,7 +65,7 @@ export default function RegisterStationPage() {
   };
 
   return (
-    <div className="mt-22 min-h-screen bg-gray-100 flex items-center justify-center p-4">
+    <div className="min-h-screen bg-gray-100 flex items-center justify-center p-4">
       <div className="w-full max-w-md">
         {/* Header */}
         <div className="text-center mb-8">
@@ -197,7 +197,7 @@ export default function RegisterStationPage() {
             <button
               onClick={() => {
                 setShowSuccessModal(false);
-                window.location.href = "/home";
+                window.location.href = "/dashboard";
               }}
               className="px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-700 transition">
               OK
