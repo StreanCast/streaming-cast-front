@@ -13,7 +13,7 @@ export default function PlaylistPage() {
     const [currentPath, setCurrentPath] = useState(""); // caminho da pasta atual, vazio = raiz
     const [isUploading, setIsUploading] = useState(false);
     const [progress, setProgress] = useState(0);
-    const [mensage, setMessage] = useState("");
+    const [message, setMessage] = useState("");
     const [selected, setSelected] = useState(null);
     const [isModalEditOpen, setIsModalEditOpen] = useState(false);
     const [isCreateNamePlaylist, setIsCreateNamePlaylist] = useState(false);
@@ -105,13 +105,13 @@ export default function PlaylistPage() {
                 // Token expirado → redireciona para login
                 window.location.href = "/login";
             }
-            if (!response.ok) throw new Error("Erro ao buscar arquivos");
+            if (!response.ok) setMessage("Erro ao buscar arquivos");
             fetchFilesPlaylists();
             setPlaylistName("");
             setIsCreateNamePlaylist(false);
             setFilesAudioPlaylist([]);
         } catch (error) {
-            console.error("Erro ao buscar arquivos:", error);
+            setMessage("Erro ao buscar arquivos:", error);
         }
     }
 
@@ -131,13 +131,13 @@ export default function PlaylistPage() {
                 window.location.href = "/login";
             }
 
-            if (!response.ok) throw new Error("Erro ao salvar arquivos");
+            if (!response.ok) setMessage("Erro ao salvar arquivos");
             fetchFilesPlaylists();
             setPlaylistName("");
             setIsCreateNamePlaylist(false);
             setFilesAudioPlaylist([]);
         } catch (error) {
-            console.error("Erro ao buscar arquivos:", error);
+            setMessage("Erro ao buscar arquivos:", error);
         }
     }
 
@@ -154,11 +154,11 @@ export default function PlaylistPage() {
                 // Token expirado → redireciona para login
                 window.location.href = "/login";
             }
-            if (!response.ok) throw new Error("Erro ao buscar arquivos");
+            if (!response.ok) setMessage("Erro ao buscar arquivos");
             const data = await response.json(); // converte corretamente para JSON
             setFilesMusic(data);
         } catch (error) {
-            console.error("Erro ao buscar arquivos:", error);
+            setMessage("Erro ao buscar arquivos:");
         }
     };
 
@@ -176,7 +176,7 @@ export default function PlaylistPage() {
                 }
             });
 
-            if (!response.ok) throw new Error("Erro ao excluir o  arquivo");
+            if (!response.ok) setMessage("Erro ao excluir o  arquivo");
 
             // Remove da lista local
             setFilesPlaylist(filesPlaylist.filter((f) => f.name !== fileToDelete.name));
@@ -186,7 +186,7 @@ export default function PlaylistPage() {
             fetchSavePlaylistMater(filtrado);
 
         } catch (err) {
-            console.error("Erro ao excluir:", err);
+            setMessage("Erro ao excluir:", err);
         }
     };
 
@@ -199,11 +199,11 @@ export default function PlaylistPage() {
                 }
             });
 
-            if (!response.ok) throw new Error("Erro ao baixar o arquivo");
+            if (!response.ok) setMessage("Erro ao baixar o arquivo");
 
             const contentLength = response.headers.get("Content-Length");
             if (!contentLength) {
-                console.warn("Não foi possível obter o tamanho do arquivo");
+                setMessage("Não foi possível obter o tamanho do arquivo");
             }
 
             const total = contentLength ? parseInt(contentLength, 10) : 0;
@@ -241,7 +241,7 @@ export default function PlaylistPage() {
             window.URL.revokeObjectURL(url);
 
         } catch (err) {
-            console.error("Erro ao baixar:", err);
+            setMessage("Erro ao baixar:", err);
         }
     };
 
@@ -259,12 +259,12 @@ export default function PlaylistPage() {
                 // Token expirado → redireciona para login
                 window.location.href = "/login";
             }
-            if (!response.ok) throw new Error("Erro ao buscar arquivos");
+            if (!response.ok) setMessage("Erro ao buscar arquivos");
             const data = await response.json(); // converte corretamente para JSON
             setFilesPlaylist(data);
             setLoading(false);
         } catch (error) {
-            console.error("Erro ao buscar arquivos:", error);
+            setMessage("Erro ao buscar arquivos:", error);
             setLoading(false);
         }
     };
@@ -281,11 +281,11 @@ export default function PlaylistPage() {
                 // Token expirado → redireciona para login
                 window.location.href = "/login";
             }
-            if (!response.ok) throw new Error("Erro ao buscar arquivos");
+            if (!response.ok) setMessage("Erro ao buscar arquivos");
             const data = await response.json(); // converte corretamente para JSON
             setFilesAudioPlaylist(data.musicFileList);
         } catch (error) {
-            console.error("Erro ao buscar arquivos:", error);
+            setMessage("Erro ao buscar arquivos:", error);
         }
     };
 
@@ -375,6 +375,13 @@ export default function PlaylistPage() {
             <h1 className="text-3xl font-bold text-gray-800 mb-8">Playlists</h1>
 
             <div className="rounded-lg border-3 p-5 bg-white" style={{ borderColor: "#DDDDDD" }}>
+                {message && (
+                        <div className={`m-6 p-4 rounded-xl shadow ${message.includes("sucesso") ? "bg-blue-100 text-blue-700" : "bg-red-100 text-red-700"}`}>
+                            <p className="text-lg m-3" >
+                                {message}
+                            </p>
+                        </div>
+                    )}
                 {/* Barra de progresso */}
                 {isUploading || isDownloading && (
                     <div className="w-full flex gap-3 justify-center items-center pb-5">

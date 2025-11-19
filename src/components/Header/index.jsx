@@ -11,13 +11,17 @@ export default function Header() {
   async function fetchListeners() {
     try {
       const response = await fetch(`${BASE_URL}/api/getInfoState`, {
-                method: "GET",
-                headers: {
-                    "Authorization": `Bearer ${token}`,
-                    "Content-Type": "application/json"
-                }
-            });
-      if (!response.ok) throw new Error("Erro ao puxar dados");
+        method: "GET",
+        headers: {
+          "Authorization": `Bearer ${token}`,
+          "Content-Type": "application/json"
+        }
+      });
+      if (!response.ok) console.error("Erro ao puxar dados");
+      if (response.status === 403 || response.status === 401) {
+        // Token expirado → redireciona para login
+        window.location.href = "/login";
+      }
       const data = await response.json();
       setDataListeners(data);
       localStorage.setItem("stationId", data.stationId);
@@ -58,7 +62,7 @@ export default function Header() {
           </button>
 
           {open && (
-            <div class="absolute right-0 mt-2 w-48 bg-white shadow-xl rounded-xl border border-gray-300 p-2 animate-fadeIn">
+            <div className="absolute right-0 mt-2 w-48 bg-white shadow-xl rounded-xl border border-gray-300 p-2 animate-fadeIn">
               <button
                 className="w-full flex items-center gap-2 px-3 py-2 rounded-lg hover:bg-gray-100 text-left text-gray-700"
                 onClick={logout}>

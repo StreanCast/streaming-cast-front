@@ -30,7 +30,7 @@ const StationConfigPage = () => {
             }
 
             if (!response.ok) {
-                throw new Error('Erro ao buscar dados da estação');
+                setMessage('Erro ao buscar dados da estação');
             }
 
             const data = await response.json();
@@ -94,7 +94,7 @@ const StationConfigPage = () => {
             }
 
             if (!response.ok) {
-                throw new Error('Erro ao salvar as configurações da estação');
+                setMessage('Erro ao salvar as configurações da estação');
             }
 
             setMessage('Configurações da estação salvas com sucesso!');

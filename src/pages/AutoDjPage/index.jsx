@@ -25,13 +25,15 @@ const AutoDjPage = () => {
                 }
             });
 
-            if (!response.ok) console.error("Erro ao dar play no auto dj");
+            if (!response.ok) setMessage("Erro ao dar play no auto dj");
             if (metadataAudio?.playlistName !== undefined) {
                 setLoading(false);
             }
-            fetchAudioPlaylists();
+            if (serverStatus.autoDj === true && metadataAudio.playlistName !== undefined) {
+                fetchAudioPlaylists();
+            }
         } catch (err) {
-            console.error("Erro ao dar play no auto dj: ", err);
+            setMessage("Erro ao dar play no auto dj: ", err);
             setLoading(false);
         }
     };
@@ -46,10 +48,10 @@ const AutoDjPage = () => {
                 }
             });
 
-            if (!response.ok) console.error("Erro ao dar pause no auto dj");
+            if (!response.ok) setMessage("Erro ao dar pause no auto dj");
             setLoading(false);
         } catch (err) {
-            console.error("Erro ao dar play no auto dj: ", err);
+            csetMessage("Erro ao dar play no auto dj");
             setLoading(false);
         }
     };
@@ -69,7 +71,7 @@ const AutoDjPage = () => {
             setMetadataAudio([]);
             setLoading(false);
         } catch (err) {
-            console.error("Erro ao desligar auto dj: ", err);
+            setMessage("Erro ao desligar auto dj");
             setLoading(false);
         }
     };
@@ -86,22 +88,26 @@ const AutoDjPage = () => {
                 // Token expirado → redireciona para login
                 window.location.href = "/login";
             }
-            if (!response.ok) throw new Error("Erro ao buscar arquivos");
+            if (!response.ok)  setMessage("Erro ao buscar arquivos");
             const data = await response.json(); // converte corretamente para JSON
             setFilesAudioPlaylist(data.musicFileList);
         } catch (error) {
-            console.error("Erro ao buscar arquivos:", error);
+            setMessage("Erro ao buscar arquivos");
         }
     };
 
     async function fetchMetadataAudio() {
         try {
             const response = await fetch(`${BASE_URL}/listeners/${stationId}/getmetadataaudio`);
-            if (!response.ok) throw new Error("Erro ao buscar metadados do audio");
+            if (!response.ok) setMessage("Erro ao buscar metadados do audio");
             const metadata = await response.json(); // converte corretamente para JSON
+            if (response.status === 403 || response.status === 401) {
+                // Token expirado → redireciona para login
+                window.location.href = "/login";
+            }
             setMetadataAudio(metadata.data);
         } catch (error) {
-            console.error("Erro ao buscar metadados do audio")
+            setMessage("Erro ao buscar metadados do audio")
         }
     }
 
@@ -124,7 +130,7 @@ const AutoDjPage = () => {
             setServerStatus(status.data);
             setLoading(false);
         } catch (error) {
-            console.error("Erro ao buscar o status do servidor")
+            setMessage("Erro ao buscar o status do servidor")
             setLoading(false);
         }
     }
@@ -141,7 +147,7 @@ const AutoDjPage = () => {
             }
             setLoading(false);
         }
-    }, [metadataAudio?.playlistName]);
+    }, [metadataAudio]);
 
     useEffect(() => {
         const client = new Client({
@@ -175,6 +181,13 @@ const AutoDjPage = () => {
                 )}
                 <h2 className="text-3xl font-bold text-gray-800 mb-8">Auto DJ</h2>
                 <div className="bg-white rounded-lg shadow-sm p-8">
+                    {message && (
+                        <div className={`m-6 p-4 rounded-xl shadow ${message.includes("sucesso") ? "bg-blue-100 text-blue-700" : "bg-red-100 text-red-700"}`}>
+                            <p className="text-lg m-3" >
+                                {message}
+                            </p>
+                        </div>
+                    )}
                     {/* Music Icon and Search */}
                     <div className="flex items-start gap-8 mb-8">
                         <div className="w-32 h-32 bg-blue-500 rounded-full flex items-center justify-center flex-shrink-0">
