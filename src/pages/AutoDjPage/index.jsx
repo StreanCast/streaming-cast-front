@@ -101,7 +101,7 @@ const AutoDjPage = () => {
             const metadata = await response.json(); // converte corretamente para JSON
             setMetadataAudio(metadata.data);
         } catch (error) {
-            throw new Error("Erro ao buscar metadados do audio")
+            console.error("Erro ao buscar metadados do audio")
         }
     }
 
@@ -122,8 +122,10 @@ const AutoDjPage = () => {
             if (!response.ok) throw new Error("Erro ao buscar o status do servidor");
             const status = await response.json(); // converte corretamente para JSON
             setServerStatus(status.data);
+            setLoading(false);
         } catch (error) {
-            throw new Error("Erro ao buscar o status do servidor")
+            console.error("Erro ao buscar o status do servidor")
+            setLoading(false);
         }
     }
 
@@ -134,7 +136,7 @@ const AutoDjPage = () => {
 
     useEffect(() => {
         if (metadataAudio?.playlistName) {
-            if (serverStatus.autoDj === true) {
+            if (serverStatus.autoDj === true && metadataAudio.playlistName !== undefined) {
                 fetchAudioPlaylists();
             }
             setLoading(false);
@@ -167,7 +169,7 @@ const AutoDjPage = () => {
 
     return (
         <>
-            <main className="flex-1 p-8 bg-gray-50 min-h-screen">
+            <main className="mt-22 flex-1 p-8 bg-gray-100 min-h-screen">
                 {loading && (
                     <LoadingModal show={loading} />
                 )}
@@ -183,7 +185,7 @@ const AutoDjPage = () => {
                     <h3 className="text-lg font-semibold text-gray-800 mb-4">Playlist: {metadataAudio?.playlistName}</h3>
                     <div className="bg-gray-50 rounded-lg w-full">
                         <div className="flex flex-wrap items-center justify-between px-5">
-                            <div className="flex flex-wrap items-center justify-between p-10">
+                            <div className="flex flex-wrap items-center justify-between gap-10 p-10">
                                 <div className='flex flex-wrap items-center gap-10'>
                                     <span className="text-gray-700 font-medium min-w-[150px]">{metadataAudio?.title}</span>
                                     <span className="text-gray-700 font-medium min-w-[150px]">{metadataAudio?.artist}</span>
@@ -201,8 +203,6 @@ const AutoDjPage = () => {
                             </div>
                         </div>
                     </div>
-
-                    {/* Queue Section */}
                     <div>
                         <h3 className="text-lg font-semibold text-gray-800 mb-4">Fila</h3>
 

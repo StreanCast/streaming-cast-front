@@ -190,8 +190,6 @@ export default function PlaylistPage() {
         }
     };
 
-
-
     const handleDownload = async (file) => {
         try {
             const response = await fetch(`${BASE_URL}${file.downloadLink}`, {
@@ -304,7 +302,7 @@ export default function PlaylistPage() {
         const file = event.target.files[0]; // apenas 1 arquivo
         if (!file) return;
 
-        // 🔥 Bloqueia arquivos que não sejam .txt
+        // Bloqueia arquivos que não sejam .txt
         if (!file.name.toLowerCase().endsWith(".txt")) {
             setMessage("Envie apenas arquivos .txt");
             return;
@@ -370,13 +368,13 @@ export default function PlaylistPage() {
 
 
     return (
-        <div className="min-h-screen p-6 flex flex-col bg-white w-full h-screen">
+        <div className="mt-22 min-h-screen p-8 flex flex-col bg-gray-100 w-full h-screen">
             {loading && (
                 <LoadingModal show={loading} />
             )}
-            <h1 className="text-3xl font-bold mb-6 text-slate-800">Playlists</h1>
+            <h1 className="text-3xl font-bold text-gray-800 mb-8">Playlists</h1>
 
-            <div className="rounded-lg border-3 p-5" style={{ borderColor: "#DDDDDD" }}>
+            <div className="rounded-lg border-3 p-5 bg-white" style={{ borderColor: "#DDDDDD" }}>
                 {/* Barra de progresso */}
                 {isUploading || isDownloading && (
                     <div className="w-full flex gap-3 justify-center items-center pb-5">
@@ -465,7 +463,7 @@ export default function PlaylistPage() {
                         <div className="fixed inset-0 bg-black/50 flex items-center justify-center p-30 z-30">
                             <div initial={{ scale: 0.9, opacity: 0 }} animate={{ scale: 1, opacity: 1 }} className="bg-white rounded-2xl shadow-xl p-6 w-full flex gap-4 h-200">
                                 {/* Botão de Fechar */}
-                                <CircleX size={40} className="cursor-pointer absolute top-10 right-32 text-black hover:text-red-500 text-2xl" onClick={closeModalEditCreatePlaylist} />
+                                <CircleX size={40} className="cursor-pointer absolute top-23 right-32 text-black hover:text-red-500 text-2xl" onClick={closeModalEditCreatePlaylist} />
                                 {/* Lista Esquerda */}
                                 <div className="overflow-y-auto w-full">
                                     <h2 className="text-xl font-semibold mb-3">Lista de músicas</h2>

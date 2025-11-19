@@ -16,9 +16,8 @@ export default function Menu() {
     }, []);
 
     return (
-        <div className={`relative flex flex-col pt-5 border-r border-gray-300 bg-white transition-all duration-300 h-screen overflow-y-auto ${isExpanded ? 'w-80 pl-5 pr-2' : 'w-20 pl-3 pr-3'}`}>
+        <div className={`relative mt-25 flex flex-col pt-5 border-r border-gray-300 bg-white transition-all duration-300 h-screen overflow-y-auto ${isExpanded ? 'w-80 pl-5 pr-2' : 'w-20 pl-3 pr-3'}`}>
             <div className="flex flex-col gap-1 flex-1">
-
                 <NavLink
                     to="/dashboard" className={({ isActive }) => {
                         const location = useLocation();
@@ -26,14 +25,10 @@ export default function Menu() {
                         return `flex gap-3 p-3 items-center font-semibold text-lg rounded-md whitespace-nowrap overflow-hidden ${active
                             ? "bg-blue-500 text-white"
                             : "text-slate-800 hover:bg-blue-500 hover:text-white"
-                            }`;
-                    }}
-                >
+                            }`}}>
                     <LayoutDashboard className="flex-shrink-0" />
                     <span
-                        className={`transition-all duration-300 ${isExpanded ? "opacity-100 translate-x-0" : "opacity-0 -translate-x-4"
-                            }`}
-                    >
+                        className={`transition-all duration-300 ${isExpanded ? "opacity-100 translate-x-0" : "opacity-0 -translate-x-4" }`} >
                         Dashboard
                     </span>
                 </NavLink>
@@ -89,7 +84,7 @@ export default function Menu() {
 
             <button
                 onClick={() => setIsExpanded(!isExpanded)}
-                className="flex items-center justify-center p-3 mb-5 text-slate-800 hover:bg-gray-100 rounded-md transition-colors"
+                className="flex items-center justify-center p-3 mb-30 text-slate-800 hover:bg-gray-100 rounded-md transition-colors"
                 aria-label={isExpanded ? "Retrair menu" : "Expandir menu"}
             >
                 {isExpanded ? <ChevronLeft size={24} /> : <ChevronRight size={24} />}

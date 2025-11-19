@@ -106,21 +106,16 @@ const StationConfigPage = () => {
     };
 
     return (
-        <div className="min-h-screen p-6 flex flex-col bg-white w-full">
+        <div className="mt-22 min-h-screen p-8 flex flex-col bg-gray-100 w-full">
             {loading && (
                 <LoadingModal show={loading} />
             )}
-            <h1 className="text-3xl font-bold mb-6 text-slate-800">Configuração da estação</h1>
+            <h1 className="text-3xl font-bold text-gray-800 mb-8">Configuração da estação</h1>
 
-            <div className="rounded-lg border-3 p-5" style={{ borderColor: "#DDDDDD" }}>
+            <div className="rounded-lg border-3 p-5 bg-white" style={{ borderColor: "#DDDDDD" }}>
                 {message && (
-                    <div className="w-full flex gap-3 justify-center items-center pb-5">
-                        <p
-                            className={`text-lg mt-3 ${message.includes("sucesso")
-                                ? "text-green-600"
-                                : "text-red-600"
-                                }`}
-                        >
+                    <div className={`m-6 p-4 rounded-xl shadow ${message.includes("sucesso") ? "bg-blue-100 text-blue-700" : "bg-red-100 text-red-700" }`}>
+                        <p className="text-lg m-3" >
                             {message}
                         </p>
                     </div>

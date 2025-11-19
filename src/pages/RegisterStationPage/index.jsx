@@ -197,7 +197,7 @@ export default function RegisterStationPage() {
             <button
               onClick={() => {
                 setShowSuccessModal(false);
-                window.location.href = "/home";
+                window.location.href = "/dashboard";
               }}
               className="px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-700 transition">
               OK
