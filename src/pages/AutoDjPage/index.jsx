@@ -29,7 +29,7 @@ const AutoDjPage = () => {
             if (metadataAudio?.playlistName !== undefined) {
                 setLoading(false);
             }
-            if (serverStatus.autoDj === true && metadataAudio.playlistName !== undefined) {
+            if (serverStatus?.autoDj === true && metadataAudio?.playlistName !== undefined) {
                 fetchAudioPlaylists();
             }
         } catch (err) {

@@ -21,7 +21,7 @@ export default function Player({ urlPlay }) {
             })
             .catch(() => {
                 setIsPlaying(false);
-                onAudioEnded();
+               // onAudioEnded();
             });
 
         startListeners(audio);
@@ -43,7 +43,7 @@ export default function Player({ urlPlay }) {
             })
             .catch(() => {
                 setIsPlaying(false);
-                onAudioEnded();
+               // onAudioEnded();
             });
     };
 
@@ -94,7 +94,7 @@ export default function Player({ urlPlay }) {
         audio.addEventListener("ended", () => {
             clearInterval(retryInterval.current);
             setIsPlaying(false);
-            onAudioEnded();
+           // onAudioEnded();
         });
 
         audio.addEventListener("error", () => {
@@ -104,13 +104,13 @@ export default function Player({ urlPlay }) {
     };
 
     // --- reconexão automática ---
-    const onAudioEnded = () => {
-        if (!retryInterval.current) {
-            retryInterval.current = setInterval(() => {
-                playAudio();
-            }, 5000);
-        }
-    };
+    // const onAudioEnded = () => {
+    //     if (!retryInterval.current) {
+    //         retryInterval.current = setInterval(() => {
+    //             playAudio();
+    //         }, 5000);
+    //     }
+    // };
 
     // --- desmontar (ngOnDestroy) ---
     useEffect(() => {

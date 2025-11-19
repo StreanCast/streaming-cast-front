@@ -53,18 +53,18 @@ export default function Header() {
         {/* Menu de usuário */}
         <div className="relative">
           <button
-            className="flex items-center gap-2 px-3 py-2 rounded-xl hover:bg-gray-100 transition"
+            className="flex items-center gap-2 px-3 py-2 rounded-xl hover:bg-gray-100 transition cursor-pointer"
             onClick={() => setOpen(!open)}
           >
-            <User className="w-5 h-5 text-gray-600" />
+            <User className="w-5 h-5 text-gray-600 cursor-pointer" />
             <span className="text-gray-700">Minha Conta</span>
             <Menu className="w-4 h-4 text-gray-500" />
           </button>
 
           {open && (
-            <div className="absolute right-0 mt-2 w-48 bg-white shadow-xl rounded-xl border border-gray-300 p-2 animate-fadeIn">
+            <div className="absolute right-0 mt-2 w-48 bg-white shadow-xl rounded-xl border border-gray-300 p-2 animate-fadeIn cursor-pointer">
               <button
-                className="w-full flex items-center gap-2 px-3 py-2 rounded-lg hover:bg-gray-100 text-left text-gray-700"
+                className="w-full flex items-center gap-2 px-3 py-2 rounded-lg hover:bg-gray-100 text-left text-gray-700 cursor-pointer"
                 onClick={logout}>
                 <LogOut className="w-4 h-4" />
                 Sair
