@@ -41,14 +41,14 @@ export default function FileManager() {
                 }
             });
 
-            if (!response.ok) throw new Error("Erro ao excluir o  arquivo");
+            if (!response.ok) setMessage("Erro ao excluir o  arquivo");
 
             // Remove da lista local
             setFiles(files.filter((f) => f.name !== fileToDelete.name));
             closeModal();
 
         } catch (err) {
-            console.error("Erro ao excluir:", err);
+            setMessage("Erro ao excluir:", err);
         }
 
     };
@@ -104,7 +104,7 @@ export default function FileManager() {
             window.URL.revokeObjectURL(url);
 
         } catch (err) {
-            console.error("Erro ao baixar:", err);
+            setMessage("Erro ao baixar arquivo");
         }
     };
 
@@ -123,12 +123,12 @@ export default function FileManager() {
                 // Token expirado → redireciona para login
                 window.location.href = "/login";
             }
-            if (!response.ok) throw new Error("Erro ao buscar arquivos");
+            if (!response.ok) setMessage("Erro ao buscar arquivos");
             const data = await response.json(); // converte corretamente para JSON
             setFiles(data);
             setLoading(false);
         } catch (error) {
-            console.error("Erro ao buscar arquivos:", error);
+            setMessage("Erro ao buscar arquivos ");
             setLoading(false);
         }
     };
@@ -189,10 +189,10 @@ export default function FileManager() {
                 // Token expirado → redireciona para login
                 window.location.href = "/login";
             }
-            if (!response.ok) throw new Error("Erro ao criar pasta");
+            if (!response.ok) setMessage("Erro ao criar pasta");
             fetchFiles(currentPath);
         } catch (error) {
-            console.error("Erro ao criar pasta", error);
+            setMessage("Erro ao criar pasta", error);
         }
     }
 
@@ -247,7 +247,6 @@ export default function FileManager() {
                 <LoadingModal show={loading} />
             )}
             <h1 className="text-3xl font-bold text-gray-800 mb-8">Gerenciador de arquivos</h1>
-
             <div className="rounded-lg border-3 p-5 bg-white" style={{ borderColor: "#DDDDDD" }}>
                 {/* Barra de progresso */}
                 {(isUploading || isDownloading) && (
@@ -263,9 +262,12 @@ export default function FileManager() {
                     </div>
                 )}{/* Mensagem final */}
                 {message && (
-                    <div className="m-6 p-4 rounded-xl bg-blue-100 text-blue-700 shadow">
+                <div className={`m-6 p-4 rounded-xl shadow ${message.includes("sucesso") ? "bg-blue-100 text-blue-700" : "bg-red-100 text-red-700"}`}>
+                    <p className="text-lg m-3" >
                         {message}
-                    </div>)}
+                    </p>
+                </div>
+            )}
                 {/* Texto de progresso */}
 
                 <div className="w-full flex flex-wrap justify-between gap-3">

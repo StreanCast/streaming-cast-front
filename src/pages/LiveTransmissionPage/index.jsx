@@ -14,6 +14,7 @@ export default function LiveTransmissionPage() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [showPassword, setShowPassword] = useState(false);
+  const [message, setMessage] = useState("");
 
   const token = localStorage.getItem("token");
 
@@ -29,12 +30,12 @@ export default function LiveTransmissionPage() {
         // Token expirado → redireciona para login
         window.location.href = "/login";
       }
-      if (!response.ok) throw new Error("Erro ao buscar arquivos");
+      if (!response.ok) setMessage("Erro ao buscar informações do servidor");
       const data = await response.json(); // converte corretamente para JSON
       setTransmissionInfo(data.data);
       setLoading(false);
     } catch (error) {
-      console.error("Erro ao buscar arquivos:", error);
+      setMessage("Erro ao buscar informações do servidor");
       setLoading(false);
     }
   };
@@ -71,6 +72,13 @@ export default function LiveTransmissionPage() {
         <div>
           <h2 className="text-3xl font-bold text-gray-800 mb-8"> Transmissão ao vivo </h2>
           <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6 sm:p-8 mb-8">
+            {message && (
+                        <div className={`m-6 p-4 rounded-xl shadow ${message.includes("sucesso") ? "bg-blue-100 text-blue-700" : "bg-red-100 text-red-700"}`}>
+                            <p className="text-lg m-3" >
+                                {message}
+                            </p>
+                        </div>
+                    )}
               <div className="bg-gray-600 rounded-lg flex items-center justify-center h-38 sm:h-54 md:h-70">
                 <p className="text-white text-lg sm:text-xl font-medium">Transmissão ao vivo!</p>
               </div>

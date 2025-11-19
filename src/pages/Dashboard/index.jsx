@@ -21,6 +21,7 @@ const Dashboard = () => {
     const [error, setError] = useState(null);
     const [metadataAudio, setMetadataAudio] = useState({});
     const [serverStatus, setServerStatus] = useState({});
+    const [message, setMessage] = useState("");
 
     const token = localStorage.getItem("token");
     const stationId = localStorage.getItem("stationId");
@@ -37,12 +38,12 @@ const Dashboard = () => {
                 // Token expirado → redireciona para login
                 window.location.href = "/login";
             }
-            if (!response.ok) throw new Error("Erro ao buscar arquivos");
+            if (!response.ok) setMessage("Erro ao buscar arquivos");
             const data = await response.json(); // converte corretamente para JSON
             setTransmissionInfo(data.data);
             setLoading(false);
         } catch (error) {
-            console.error("Erro ao buscar arquivos:", error);
+            setMessage("Erro ao buscar arquivos:");
             setLoading(false);
         }
     };
@@ -59,7 +60,7 @@ const Dashboard = () => {
                 // Token expirado → redireciona para login
                 window.location.href = "/login";
             }
-            if (!response.ok) throw new Error("Erro ao buscar arquivos");
+            if (!response.ok) setMessage("Erro ao buscar arquivos");
             const data = await response.json(); // converte corretamente para JSON
             setInfoServer(data.data);
             setLoading(false);
@@ -72,11 +73,11 @@ const Dashboard = () => {
     async function fetchMetadataAudio() {
         try {
             const response = await fetch(`${BASE_URL}/listeners/${stationId}/getmetadataaudio`);
-            if (!response.ok) throw new Error("Erro ao buscar metadados do audio");
+            if (!response.ok) setMessage("Erro ao buscar metadados do audio");
             const metadata = await response.json(); // converte corretamente para JSON
             setMetadataAudio(metadata.data);
         } catch (error) {
-            throw new Error("Erro ao buscar metadados do audio")
+            setMessage("Erro ao buscar metadados do audio")
         }
     }
 
@@ -89,11 +90,11 @@ const Dashboard = () => {
                     "Content-Type": "application/json"
                 }
             });
-            if (!response.ok) throw new Error("Erro ao buscar o status do servidor");
+            if (!response.ok) setMessage("Erro ao buscar o status do servidor");
             const status = await response.json(); // converte corretamente para JSON
             setServerStatus(status.data);
         } catch (error) {
-            throw new Error("Erro ao buscar o status do servidor")
+            setMessage("Erro ao buscar o status do servidor")
         }
     }
 
@@ -141,11 +142,18 @@ const Dashboard = () => {
                     <h2 className="text-3xl font-bold text-gray-800 mb-8">Dashboard</h2>
                 </div>
 
+                {message && (
+                    <div className={`m-6 p-4 rounded-xl shadow ${message.includes("sucesso") ? "bg-blue-100 text-blue-700" : "bg-red-100 text-red-700"}`}>
+                        <p className="text-lg m-3" >
+                            {message}
+                        </p>
+                    </div>
+                )}
                 {/* Status Cards */}
                 <div className="grid sm:grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-8">
                     <StatusCard title="NO AR" icon={Radio} color="green" />
                     {serverStatus?.autoDj && (
-                        <StatusCard title="AUTO-DJ LIGADO" icon={Volume2} color="blue" titleMusic={metadataAudio?.title} playlistMusic={metadataAudio?.playlistName} artistMusic={metadataAudio.artist} />
+                        <StatusCard title="AUTO-DJ LIGADO" icon={Volume2} color="blue" titleMusic={metadataAudio?.title} playlistMusic={metadataAudio?.playlistName} artistMusic={metadataAudio?.artist} />
                     )}{!serverStatus?.autoDj && (
                         <StatusCard title="AUTO-DJ DESLIGADO" icon={Volume2} color="red" />
                     )}
