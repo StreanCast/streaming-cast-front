@@ -1,8 +1,211 @@
+import { useState, useEffect } from 'react';
+import { User, Mail, Lock } from 'lucide-react';
+import { BASE_URL } from "../../config";
+import LoadingModal from '../../components/LoadingModal';
 
 const AccountConfigPage = () => {
-    return ( 
-        <div className="w-full"></div>
-     );
+    const [formData, setFormData] = useState({
+        username: '',
+        email: '',
+        password: '',
+        confirmPassword: ''
+    });
+    const [message, setMessage] = useState("");
+    const [loading, setLoading] = useState(true);
+
+    const token = localStorage.getItem("token");
+
+    const fetchUserData = async () => {
+        try {
+            const response = await fetch(`${BASE_URL}/user/listAccountInformation`, {
+                headers: {
+                    "Authorization": `Bearer ${token}`,
+                }
+            });
+
+            if (response.status === 403 || response.status === 401) {
+                window.location.href = "/login";
+            }
+
+            if (!response.ok) {
+                setLoading(false);
+                throw new Error('Erro ao buscar dados do usuário');
+            }
+
+            const data = await response.json();
+            setFormData({
+                username: data.name,
+                email: data.email,
+                password: '',
+                confirmPassword: ''
+            });
+            setLoading(false);
+        } catch (error) {
+            setLoading(false);
+            setMessage("Erro ao carregar dados do usuário.");
+        }
+    };
+
+    useEffect(() => {
+        fetchUserData();
+    }, [token]);
+
+    const handleChange = (e) => {
+        setFormData({
+            ...formData,
+            [e.target.name]: e.target.value
+        });
+    };
+
+    const handleSubmit = async () => {
+        if (formData.password !== formData.confirmPassword) {
+            setMessage('As senhas não coincidem!');
+            return;
+        }
+
+        try {
+            const response = await fetch(`${BASE_URL}/user/updateAccountInformation`, {
+                method: 'PUT',
+                headers: {
+                    'Content-Type': 'application/json',
+                    "Authorization": `Bearer ${token}`,
+                },
+                body: JSON.stringify({
+                    email: formData.email,
+                    flat: null,
+                    name: formData.username,
+                    password: formData.password,
+                })
+            });
+
+            if (response.status === 403 || response.status === 401) {
+                window.location.href = "/login";
+            }
+
+            if (!response.ok) {
+                throw new Error('Erro ao salvar as configurações');
+            }
+
+            setMessage('Configurações salvas com sucesso!');
+
+        } catch (error) {
+            console.error(error);
+            setMessage('Erro ao salvar as configurações.');
+        }
+    };
+
+    return (
+        <div className="mt-22 min-h-screen p-8 flex flex-col bg-gray-100 w-full">
+            {loading && (
+                <LoadingModal show={loading} />
+            )}
+            <h1 className="text-3xl font-bold text-gray-800 mb-8">Configuração de conta</h1>
+
+            <div className="rounded-lg border-3 p-5 bg-white" style={{ borderColor: "#DDDDDD" }}>
+                {message && (
+                    <div className={`m-6 p-4 rounded-xl shadow ${message.includes("sucesso") ? "bg-blue-100 text-blue-700" : "bg-red-100 text-red-700" }`}>
+                        <p className="text-lg m-3" >
+                            {message}
+                        </p>
+                    </div>
+                )}
+                <div className="w-full max-w-2xl">
+                    <div className="space-y-5 sm:space-y-6">
+                        {/* Nome de usuário */}
+                        <div>
+                            <label htmlFor="username" className="block text-sm sm:text-base font-medium text-gray-700 mb-2">
+                                Nome de usuário
+                            </label>
+                            <div className="relative">
+                                <div className="absolute inset-y-0 left-0 pl-3 sm:pl-4 flex items-center pointer-events-none">
+                                    <User className="h-5 w-5 text-gray-400" />
+                                </div>
+                                <input
+                                    type="text"
+                                    id="username"
+                                    name="username"
+                                    value={formData.username}
+                                    onChange={handleChange}
+                                    className="block w-full pl-10 sm:pl-12 pr-3 py-2.5 sm:py-3 border-2 border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent text-sm sm:text-base"
+                                />
+                            </div>
+                        </div>
+
+                        {/* E-mail */}
+                        <div>
+                            <label htmlFor="email" className="block text-sm sm:text-base font-medium text-gray-700 mb-2">
+                                E-mail
+                            </label>
+                            <div className="relative">
+                                <div className="absolute inset-y-0 left-0 pl-3 sm:pl-4 flex items-center pointer-events-none">
+                                    <Mail className="h-5 w-5 text-gray-400" />
+                                </div>
+                                <input
+                                    type="email"
+                                    id="email"
+                                    name="email"
+                                    value={formData.email}
+                                    onChange={handleChange}
+                                    className="block w-full pl-10 sm:pl-12 pr-3 py-2.5 sm:py-3 border-2 border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent text-sm sm:text-base"
+                                />
+                            </div>
+                        </div>
+
+                        {/* Senha */}
+                        <div>
+                            <label htmlFor="password" className="block text-sm sm:text-base font-medium text-gray-700 mb-2">
+                                Nova Senha
+                            </label>
+                            <div className="relative">
+                                <div className="absolute inset-y-0 left-0 pl-3 sm:pl-4 flex items-center pointer-events-none">
+                                    <Lock className="h-5 w-5 text-gray-400" />
+                                </div>
+                                <input
+                                    type="password"
+                                    id="password"
+                                    name="password"
+                                    value={formData.password}
+                                    onChange={handleChange}
+                                    className="block w-full pl-10 sm:pl-12 pr-3 py-2.5 sm:py-3 border-2 border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent text-sm sm:text-base"
+                                    placeholder="Deixe em branco para não alterar"
+                                />
+                            </div>
+                        </div>
+
+                        {/* Repetir senha */}
+                        <div>
+                            <label htmlFor="confirmPassword" className="block text-sm sm:text-base font-medium text-gray-700 mb-2">
+                                Repetir nova senha
+                            </label>
+                            <div className="relative">
+                                <div className="absolute inset-y-0 left-0 pl-3 sm:pl-4 flex items-center pointer-events-none">
+                                    <Lock className="h-5 w-5 text-gray-400" />
+                                </div>
+                                <input
+                                    type="password"
+                                    id="confirmPassword"
+                                    name="confirmPassword"
+                                    value={formData.confirmPassword}
+                                    onChange={handleChange}
+                                    className="block w-full pl-10 sm:pl-12 pr-3 py-2.5 sm:py-3 border-2 border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent text-sm sm:text-base"
+                                />
+                            </div>
+                        </div>
+
+                        {/* Botão Salvar */}
+                        <div className="pt-2">
+                            <button
+                                onClick={handleSubmit}
+                                className="px-4 py-2 rounded-lg font-semibold border-3 text-white bg-blue-500 hover:bg-blue-700 cursor-pointer"
+                            >
+                                Salvar
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    );
 }
- 
+
 export default AccountConfigPage;

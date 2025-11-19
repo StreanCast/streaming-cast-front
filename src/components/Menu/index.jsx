@@ -1,62 +1,94 @@
-import { NavLink } from "react-router-dom";
-import { User, Play, List, Folders, RadioTower, Cog } from "lucide-react";
+import { useState, useEffect } from "react";
+import { NavLink, useLocation } from "react-router-dom";
+import { LayoutDashboard, Play, List, Folders, RadioTower, Cog, ChevronLeft, ChevronRight } from "lucide-react";
 
 export default function Menu() {
-     {/*sm:	640px	Celulares maiores
- md:	768px	Tablets
-lg:	1024px	Laptops
-xl:	1280px	Monitores grandes
-2xl: */}
+    const [isExpanded, setIsExpanded] = useState(true);
+
+    useEffect(() => {
+        const media = window.matchMedia("(min-width: 768px)");
+        // Define o valor inicial
+        setIsExpanded(media.matches);
+        // Listener para quando a tela mudar
+        const listener = (event) => setIsExpanded(event.matches);
+        media.addEventListener("change", listener);
+        return () => media.removeEventListener("change", listener);
+    }, []);
+
     return (
-        
-        <div className="pl-5 pt-5 flex flex-col sm:w-[500px] md:w-[500px] lg:w-[500px] xl:w-[500px] 2xl:w-[500px] gap-1">
-            <NavLink to="/"className={({ isActive }) =>
-                       `flex gap-2 p-3 items-center font-semibold text-lg rounded-md ${isActive
-                        ? "bg-blue-500 text-white"
-                        : "text-slate-800 hover:bg-blue-500 hover:text-white"}`}><User /> Perfil
-            </NavLink>
+        <div className={`relative mt-25 flex flex-col pt-5 border-r border-gray-300 bg-white transition-all duration-300 h-screen overflow-y-auto ${isExpanded ? 'w-80 pl-5 pr-2' : 'w-20 pl-3 pr-3'}`}>
+            <div className="flex flex-col gap-1 flex-1">
+                <NavLink
+                    to="/dashboard" className={({ isActive }) => {
+                        const location = useLocation();
+                        const active = isActive || location.pathname === "/";
+                        return `flex gap-3 p-3 items-center font-semibold text-lg rounded-md whitespace-nowrap overflow-hidden ${active
+                            ? "bg-blue-500 text-white"
+                            : "text-slate-800 hover:bg-blue-500 hover:text-white"
+                            }`}}>
+                    <LayoutDashboard className="flex-shrink-0" />
+                    <span
+                        className={`transition-all duration-300 ${isExpanded ? "opacity-100 translate-x-0" : "opacity-0 -translate-x-4" }`} >
+                        Dashboard
+                    </span>
+                </NavLink>
 
-            <NavLink to="/auto-dj" className={({ isActive }) =>
-                    `flex gap-3 p-3 items-center font-semibold text-lg rounded-md ${isActive
+                <NavLink to="/auto-dj" className={({ isActive }) =>
+                    `flex gap-3 p-3 items-center font-semibold text-lg rounded-md whitespace-nowrap overflow-hidden ${isActive
                         ? "bg-blue-500 text-white"
                         : "text-slate-800 hover:bg-blue-500 hover:text-white"}`}>
-                        <Play /> Auto DJ
-            </NavLink>
+                    <Play className="flex-shrink-0" />
+                    <span className={`transition-all duration-300 ${isExpanded ? 'opacity-100 translate-x-0' : 'opacity-0 -translate-x-4'}`}>Auto DJ</span>
+                </NavLink>
 
-            <NavLink to="/playlists"className={({ isActive }) =>
-                    `flex gap-3 p-3 items-center font-semibold text-lg rounded-md ${isActive
+                <NavLink to="/playlists" className={({ isActive }) =>
+                    `flex gap-3 p-3 items-center font-semibold text-lg rounded-md whitespace-nowrap overflow-hidden ${isActive
                         ? "bg-blue-500 text-white"
                         : "text-slate-800 hover:bg-blue-500 hover:text-white"}`}>
-                        <List /> Playlists
-            </NavLink>
+                    <List className="flex-shrink-0" />
+                    <span className={`transition-all duration-300 ${isExpanded ? 'opacity-100 translate-x-0' : 'opacity-0 -translate-x-4'}`}>Playlists</span>
+                </NavLink>
 
-            <NavLink to="/file-manager" className={({ isActive }) =>
-                    `flex gap-3 p-3 items-center font-semibold text-lg rounded-md ${isActive
+                <NavLink to="/file-manager" className={({ isActive }) =>
+                    `flex gap-3 p-3 items-center font-semibold text-lg rounded-md whitespace-nowrap overflow-hidden ${isActive
                         ? "bg-blue-500 text-white"
                         : "text-slate-800 hover:bg-blue-500 hover:text-white"}`}>
-                        <Folders /> Gerenciador de Arquivos
-            </NavLink>
+                    <Folders className="flex-shrink-0" />
+                    <span className={`transition-all duration-300 ${isExpanded ? 'opacity-100 translate-x-0' : 'opacity-0 -translate-x-4'}`}>Gerenciador de Arquivos</span>
+                </NavLink>
 
-            <NavLink to="/live-transmission" className={({ isActive }) =>
-                    `flex gap-3 p-3 items-center font-semibold text-lg rounded-md ${isActive
+                <NavLink to="/live-transmission" className={({ isActive }) =>
+                    `flex gap-3 p-3 items-center font-semibold text-lg rounded-md whitespace-nowrap overflow-hidden ${isActive
                         ? "bg-blue-500 text-white"
                         : "text-slate-800 hover:bg-blue-500 hover:text-white"}`}>
-                <RadioTower /> Transmissão ao vivo
-            </NavLink>
+                    <RadioTower className="flex-shrink-0" />
+                    <span className={`transition-all duration-300 ${isExpanded ? 'opacity-100 translate-x-0' : 'opacity-0 -translate-x-4'}`}>Transmissão ao vivo</span>
+                </NavLink>
 
-            <NavLink to="/account-config"className={({ isActive }) =>
-                    `flex gap-3 p-3 items-center font-semibold text-lg rounded-md ${isActive
+                <NavLink to="/account-config" className={({ isActive }) =>
+                    `flex gap-3 p-3 items-center font-semibold text-lg rounded-md whitespace-nowrap overflow-hidden ${isActive
                         ? "bg-blue-500 text-white"
                         : "text-slate-800 hover:bg-blue-500 hover:text-white"}`}>
-                <Cog /> Configuração da conta
-            </NavLink>
+                    <Cog className="flex-shrink-0" />
+                    <span className={`transition-all duration-300 ${isExpanded ? 'opacity-100 translate-x-0' : 'opacity-0 -translate-x-4'}`}>Configuração da conta</span>
+                </NavLink>
 
-            <NavLink to="/station-config" className={({ isActive }) =>
-                    `flex gap-3 p-3 items-center font-semibold text-lg rounded-md ${isActive
+                <NavLink to="/station-config" className={({ isActive }) =>
+                    `flex gap-3 p-3 items-center font-semibold text-lg rounded-md whitespace-nowrap overflow-hidden ${isActive
                         ? "bg-blue-500 text-white"
                         : "text-slate-800 hover:bg-blue-500 hover:text-white"}`}>
-                <Cog /> Configurações da estação
-            </NavLink>
+                    <Cog className="flex-shrink-0" />
+                    <span className={`transition-all duration-300 ${isExpanded ? 'opacity-100 translate-x-0' : 'opacity-0 -translate-x-4'}`}>Configurações da estação</span>
+                </NavLink>
+            </div>
+
+            <button
+                onClick={() => setIsExpanded(!isExpanded)}
+                className="flex items-center justify-center p-3 mb-30 text-slate-800 hover:bg-gray-100 rounded-md transition-colors"
+                aria-label={isExpanded ? "Retrair menu" : "Expandir menu"}
+            >
+                {isExpanded ? <ChevronLeft size={24} /> : <ChevronRight size={24} />}
+            </button>
         </div>
     );
 }

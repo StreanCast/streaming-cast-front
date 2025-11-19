@@ -1,6 +1,7 @@
 import { useState, useRef, useEffect } from "react";
 import { Download, Trash, Pencil, List, Music, Folder, CornerDownLeft, CircleX, MoveRight } from "lucide-react";
 import { BASE_URL } from "../../config";
+import LoadingModal from '../../components/LoadingModal';
 
 export default function PlaylistPage() {
     const [filesPlaylist, setFilesPlaylist] = useState([]);
@@ -12,20 +13,16 @@ export default function PlaylistPage() {
     const [currentPath, setCurrentPath] = useState(""); // caminho da pasta atual, vazio = raiz
     const [isUploading, setIsUploading] = useState(false);
     const [progress, setProgress] = useState(0);
-    const [message, setMessage] = useState("");
+    const [mensage, setMessage] = useState("");
     const [selected, setSelected] = useState(null);
     const [isModalEditOpen, setIsModalEditOpen] = useState(false);
     const [isCreateNamePlaylist, setIsCreateNamePlaylist] = useState(false);
     const [playlistName, setPlaylistName] = useState("");
     const [uploadResult, setUploadResult] = useState(null);
-
+    const [isDownloading, setIsDownloading] = useState(false);
+    const [loading, setLoading] = useState(true);
 
     const token = localStorage.getItem("token");
-    const stationId = localStorage.getItem("stationId");
-
-    if (!stationId || stationId === "null") {
-        window.location.href = "/login";
-    }
 
     const openFolder = (file) => {
         if (file.isDirectory) {
@@ -76,6 +73,7 @@ export default function PlaylistPage() {
         setPlaylistName("");
         setIsModalEditOpen(false);
         setFilesAudioPlaylist([]);
+        setCurrentPath("");
     };
 
     const editPlaylist = (playlistName) => {
@@ -90,7 +88,7 @@ export default function PlaylistPage() {
     }
 
     async function fetchSavePlaylist() {
-        const paths = filesAudioPlaylist.map(item => `/servidores/${stationId}/${item.path}`);
+        const paths = filesAudioPlaylist.map(item => item.path);
         try {
             const response = await fetch(`${BASE_URL}/api/playlists/update`, {
                 method: "PUT",
@@ -103,7 +101,7 @@ export default function PlaylistPage() {
                     playList: paths
                 })
             });
-            if (response.status === 403) {
+            if (response.status === 403 || response.status === 401) {
                 // Token expirado → redireciona para login
                 window.location.href = "/login";
             }
@@ -117,9 +115,8 @@ export default function PlaylistPage() {
         }
     }
 
-    async function fetchSavePlaylistMater() {
-        const filtrado = filesPlaylist.filter(item => item.name != fileToDelete.name);
-        const paths = filtrado.map(item => item.name.replace(".m3u8", ""));
+    async function fetchSavePlaylistMater(paths) {
+        paths = paths.map(item => item.name.replace(".m3u8", ""));
         try {
             const response = await fetch(`${BASE_URL}/api/playlists/updateMaster`, {
                 method: "PUT",
@@ -129,10 +126,11 @@ export default function PlaylistPage() {
                 },
                 body: JSON.stringify({ playList: paths })
             });
-            if (response.status === 403) {
+            if (response.status === 403 || response.status === 401) {
                 // Token expirado → redireciona para login
-                //window.location.href = "/login";
+                window.location.href = "/login";
             }
+
             if (!response.ok) throw new Error("Erro ao salvar arquivos");
             fetchFilesPlaylists();
             setPlaylistName("");
@@ -146,13 +144,13 @@ export default function PlaylistPage() {
     async function fetchFilesMusic(path = "") {
 
         try {
-            const response = await fetch(`${BASE_URL}/api/files/${stationId}/list/audios?path=${path}`, {
+            const response = await fetch(`${BASE_URL}/api/files/list/audios?path=${path}`, {
                 headers: {
                     "Authorization": `Bearer ${token}`,
                     "Content-Type": "application/json"
                 }
             });
-            if (response.status === 403) {
+            if (response.status === 403 || response.status === 401) {
                 // Token expirado → redireciona para login
                 window.location.href = "/login";
             }
@@ -168,7 +166,6 @@ export default function PlaylistPage() {
         if (!fileToDelete) return;
         closeModal();
         setFilesPlaylist(filesPlaylist.filter((f) => f.name !== fileToDelete.name));
-        fetchSavePlaylistMater();
 
         try {
             const response = await fetch(BASE_URL + fileToDelete.deleteLink, {
@@ -185,16 +182,15 @@ export default function PlaylistPage() {
             setFilesPlaylist(filesPlaylist.filter((f) => f.name !== fileToDelete.name));
             closeModal();
             setFilesAudioPlaylist(filesAudioPlaylist.filter((f) => f.name !== fileToDelete.name));
-            fetchSavePlaylistMater();
+            const filtrado = filesPlaylist.filter(item => item.name != fileToDelete.name);
+            fetchSavePlaylistMater(filtrado);
 
         } catch (err) {
             console.error("Erro ao excluir:", err);
         }
     };
 
-
-
-    async function handleDownload(file) {
+    const handleDownload = async (file) => {
         try {
             const response = await fetch(`${BASE_URL}${file.downloadLink}`, {
                 headers: {
@@ -205,17 +201,45 @@ export default function PlaylistPage() {
 
             if (!response.ok) throw new Error("Erro ao baixar o arquivo");
 
-            const blob = await response.blob();
+            const contentLength = response.headers.get("Content-Length");
+            if (!contentLength) {
+                console.warn("Não foi possível obter o tamanho do arquivo");
+            }
+
+            const total = contentLength ? parseInt(contentLength, 10) : 0;
+            let loaded = 0;
+
+            const reader = response.body.getReader();
+            const chunks = [];
+            while (true) {
+                const { done, value } = await reader.read();
+                if (done) break;
+                chunks.push(value);
+                loaded += value.length;
+                setIsDownloading(true);
+                if (total) {
+                    const progress = (loaded / total) * 100;
+                    setProgress(progress.toFixed(2));
+                    // Aqui você pode atualizar uma barra de progresso no seu estado React
+
+                    if (progress === 100) {
+                        setIsDownloading(false);
+                    }
+                }
+            }
+
+            // Concatena os chunks e cria o blob
+            const blob = new Blob(chunks);
             const url = window.URL.createObjectURL(blob);
 
-            // Cria um link temporário para forçar o download
             const a = document.createElement("a");
             a.href = url;
-            a.download = file.name; // nome do arquivo
+            a.download = file.name;
             document.body.appendChild(a);
             a.click();
             a.remove();
             window.URL.revokeObjectURL(url);
+
         } catch (err) {
             console.error("Erro ao baixar:", err);
         }
@@ -225,33 +249,35 @@ export default function PlaylistPage() {
     async function fetchFilesPlaylists() {
 
         try {
-            const response = await fetch(`${BASE_URL}/api/playlists/${stationId}/listMaster`, {
+            const response = await fetch(`${BASE_URL}/api/playlists/listMaster`, {
                 headers: {
                     "Authorization": `Bearer ${token}`,
                     "Content-Type": "application/json"
                 }
             });
-            if (response.status === 403) {
+            if (response.status === 403 || response.status === 401) {
                 // Token expirado → redireciona para login
                 window.location.href = "/login";
             }
             if (!response.ok) throw new Error("Erro ao buscar arquivos");
             const data = await response.json(); // converte corretamente para JSON
             setFilesPlaylist(data);
+            setLoading(false);
         } catch (error) {
             console.error("Erro ao buscar arquivos:", error);
+            setLoading(false);
         }
     };
 
     async function fetchAudioPlaylists(playlistName) {
         try {
-            const response = await fetch(`${BASE_URL}/api/playlists/${stationId}/listAudio?playlistName=${playlistName}.m3u8`, {
+            const response = await fetch(`${BASE_URL}/api/playlists/listAudio?playlistName=${playlistName}.m3u8`, {
                 headers: {
                     "Authorization": `Bearer ${token}`,
                     "Content-Type": "application/json"
                 }
             });
-            if (response.status === 403) {
+            if (response.status === 403 || response.status === 401) {
                 // Token expirado → redireciona para login
                 window.location.href = "/login";
             }
@@ -276,7 +302,7 @@ export default function PlaylistPage() {
         const file = event.target.files[0]; // apenas 1 arquivo
         if (!file) return;
 
-        // 🔥 Bloqueia arquivos que não sejam .txt
+        // Bloqueia arquivos que não sejam .txt
         if (!file.name.toLowerCase().endsWith(".txt")) {
             setMessage("Envie apenas arquivos .txt");
             return;
@@ -342,12 +368,15 @@ export default function PlaylistPage() {
 
 
     return (
-        <div className="min-h-screen p-6 flex flex-col bg-white w-full h-screen">
-            <h1 className="text-3xl font-bold mb-6 text-slate-800">Playlists</h1>
+        <div className="mt-22 min-h-screen p-8 flex flex-col bg-gray-100 w-full h-screen">
+            {loading && (
+                <LoadingModal show={loading} />
+            )}
+            <h1 className="text-3xl font-bold text-gray-800 mb-8">Playlists</h1>
 
-            <div className="rounded-lg border-3 p-5" style={{ borderColor: "#DDDDDD" }}>
+            <div className="rounded-lg border-3 p-5 bg-white" style={{ borderColor: "#DDDDDD" }}>
                 {/* Barra de progresso */}
-                {isUploading && (
+                {isUploading || isDownloading && (
                     <div className="w-full flex gap-3 justify-center items-center pb-5">
                         <div className="w-full bg-gray-200 rounded-full h-4 mt-2">
                             <div
@@ -434,7 +463,7 @@ export default function PlaylistPage() {
                         <div className="fixed inset-0 bg-black/50 flex items-center justify-center p-30 z-30">
                             <div initial={{ scale: 0.9, opacity: 0 }} animate={{ scale: 1, opacity: 1 }} className="bg-white rounded-2xl shadow-xl p-6 w-full flex gap-4 h-200">
                                 {/* Botão de Fechar */}
-                                <CircleX size={40} className="cursor-pointer absolute top-10 right-32 text-black hover:text-red-500 text-2xl" onClick={closeModalEditCreatePlaylist} />
+                                <CircleX size={40} className="cursor-pointer absolute top-23 right-32 text-black hover:text-red-500 text-2xl" onClick={closeModalEditCreatePlaylist} />
                                 {/* Lista Esquerda */}
                                 <div className="overflow-y-auto w-full">
                                     <h2 className="text-xl font-semibold mb-3">Lista de músicas</h2>

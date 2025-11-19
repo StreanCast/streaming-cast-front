@@ -1,6 +1,7 @@
 import { useState, useRef, useEffect } from "react";
 import { Download, Folder, Music, Trash } from "lucide-react";
 import { BASE_URL } from "../../config";
+import LoadingModal from '../../components/LoadingModal';
 
 export default function FileManager() {
     const [files, setFiles] = useState([]);
@@ -11,15 +12,12 @@ export default function FileManager() {
     const [isModalNewFolderOpen, setIsModalNewFolderOpen] = useState(false);
     const [folderName, setFolderName] = useState("");
     const [isUploading, setIsUploading] = useState(false);
+    const [isDownloading, setIsDownloading] = useState(false);
     const [progress, setProgress] = useState(0);
     const [message, setMessage] = useState("");
-    
-    const token = localStorage.getItem("token");
-    const stationId = localStorage.getItem("stationId");
+    const [loading, setLoading] = useState(true);
 
-    if (!stationId || stationId === "null") {
-        window.location.href = "/login";
-    }
+    const token = localStorage.getItem("token");
 
     const openDeleteModal = (file) => {
         setFileToDelete(file);
@@ -66,41 +64,72 @@ export default function FileManager() {
 
             if (!response.ok) throw new Error("Erro ao baixar o arquivo");
 
-            const blob = await response.blob();
+            const contentLength = response.headers.get("Content-Length");
+            if (!contentLength) {
+                console.warn("Não foi possível obter o tamanho do arquivo");
+            }
+
+            const total = contentLength ? parseInt(contentLength, 10) : 0;
+            let loaded = 0;
+
+            const reader = response.body.getReader();
+            const chunks = [];
+            while (true) {
+                const { done, value } = await reader.read();
+                if (done) break;
+                chunks.push(value);
+                loaded += value.length;
+                setIsDownloading(true);
+                if (total) {
+                    const progress = (loaded / total) * 100;
+                    setProgress(progress.toFixed(2));
+                    // Aqui você pode atualizar uma barra de progresso no seu estado React
+
+                    if (progress === 100) {
+                        setIsDownloading(false);
+                    }
+                }
+            }
+
+            // Concatena os chunks e cria o blob
+            const blob = new Blob(chunks);
             const url = window.URL.createObjectURL(blob);
 
-            // Cria um link temporário para forçar o download
             const a = document.createElement("a");
             a.href = url;
-            a.download = file.name; // nome do arquivo
+            a.download = file.name;
             document.body.appendChild(a);
             a.click();
             a.remove();
             window.URL.revokeObjectURL(url);
+
         } catch (err) {
             console.error("Erro ao baixar:", err);
         }
     };
 
 
+
     const fetchFiles = async (path = "") => {
 
         try {
-            const response = await fetch(`${BASE_URL}/api/files/${stationId}/list/audios?path=${path}`, {
+            const response = await fetch(`${BASE_URL}/api/files/list/audios?path=${path}`, {
                 headers: {
                     "Authorization": `Bearer ${token}`,
                     "Content-Type": "application/json"
                 }
             });
-            if (response.status === 403) {
+            if (response.status === 403 || response.status === 401) {
                 // Token expirado → redireciona para login
                 window.location.href = "/login";
             }
             if (!response.ok) throw new Error("Erro ao buscar arquivos");
             const data = await response.json(); // converte corretamente para JSON
             setFiles(data);
+            setLoading(false);
         } catch (error) {
             console.error("Erro ao buscar arquivos:", error);
+            setLoading(false);
         }
     };
 
@@ -149,14 +178,14 @@ export default function FileManager() {
 
     async function handleNewFolder(folderName) {
         try {
-            const response = await fetch(`${BASE_URL}/api/files/${stationId}/newFolder?path=music/${currentPath}/${folderName}`, {
+            const response = await fetch(`${BASE_URL}/api/files/newFolder?path=music/${currentPath}/${folderName}`, {
                 method: "POST",
                 headers: {
                     "Authorization": `Bearer ${token}`,
                     "Content-Type": "application/json"
                 }
             });
-            if (response.status === 403) {
+            if (response.status === 403 || response.status === 401) {
                 // Token expirado → redireciona para login
                 window.location.href = "/login";
             }
@@ -213,12 +242,15 @@ export default function FileManager() {
     };
 
     return (
-        <div className="min-h-screen p-6 flex flex-col bg-white w-full">
-            <h1 className="text-3xl font-bold mb-6 text-slate-800">Gerenciador de arquivos</h1>
+        <div className="mt-22 min-h-screen p-8 flex flex-col bg-gray-100 w-full">
+            {loading && (
+                <LoadingModal show={loading} />
+            )}
+            <h1 className="text-3xl font-bold text-gray-800 mb-8">Gerenciador de arquivos</h1>
 
-            <div className="rounded-lg border-3 p-5" style={{ borderColor: "#DDDDDD" }}>
+            <div className="rounded-lg border-3 p-5 bg-white" style={{ borderColor: "#DDDDDD" }}>
                 {/* Barra de progresso */}
-                {isUploading && (
+                {(isUploading || isDownloading) && (
                     <div className="w-full flex gap-3 justify-center items-center pb-5">
                         <div className="w-full bg-gray-200 rounded-full h-4 mt-2">
                             <div
@@ -233,7 +265,7 @@ export default function FileManager() {
                 {message && (
                     <div className="m-6 p-4 rounded-xl bg-blue-100 text-blue-700 shadow">
                         {message}
-                    </div> )}
+                    </div>)}
                 {/* Texto de progresso */}
 
                 <div className="w-full flex flex-wrap justify-between gap-3">

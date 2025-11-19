@@ -5,14 +5,14 @@ import Menu from "../../components/Menu";
 
 const SiteLayout = () => {
     return (
-        <>
+        <div className="flex h-screen overflow-hidden">
             <Header />
-            <div className="flex w-full">
-                <Menu />
+            <Menu />
+            <main className="flex-1 overflow-y-auto">
                 <Outlet />
-            </div>
-            <Footer />
-        </>
+                <Footer />
+            </main>
+        </div>
     );
 }
 
