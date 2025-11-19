@@ -1,1 +1,1 @@
-export const BASE_URL = "http://34.46.202.6:8080";
+export const BASE_URL = "https://apistreancast.duckdns.org";
