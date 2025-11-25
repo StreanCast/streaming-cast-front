@@ -368,7 +368,7 @@ export default function PlaylistPage() {
 
 
     return (
-        <div className="mt-22 min-h-screen p-8 flex flex-col bg-gray-100 w-full h-screen">
+        <div className="mt-18 min-h-screen p-8 flex flex-col bg-gray-100 w-full h-screen">
             {loading && (
                 <LoadingModal show={loading} />
             )}
@@ -468,7 +468,7 @@ export default function PlaylistPage() {
 
                     {isModalEditOpen && (
                         <div className="fixed inset-0 bg-black/50 flex items-center justify-center p-30 z-30">
-                            <div initial={{ scale: 0.9, opacity: 0 }} animate={{ scale: 1, opacity: 1 }} className="bg-white rounded-2xl shadow-xl p-6 w-full flex gap-4 h-200">
+                            <div initial={{ scale: 0.9, opacity: 0 }} animate={{ scale: 1, opacity: 1 }} className="bg-white rounded-2xl shadow-xl p-6 w-full flex gap-4 h-150">
                                 {/* Botão de Fechar */}
                                 <CircleX size={40} className="cursor-pointer absolute top-23 right-32 text-black hover:text-red-500 text-2xl" onClick={closeModalEditCreatePlaylist} />
                                 {/* Lista Esquerda */}

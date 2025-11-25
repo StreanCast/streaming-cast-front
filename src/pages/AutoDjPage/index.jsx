@@ -136,6 +136,7 @@ const AutoDjPage = () => {
     }
 
     useEffect(() => {
+        setFilesAudioPlaylist([]);
         fetchMetadataAudio();
         fetchStatusServer();
     }, []);
@@ -175,7 +176,7 @@ const AutoDjPage = () => {
 
     return (
         <>
-            <main className="mt-22 flex-1 p-8 bg-gray-100 min-h-screen">
+            <main className="mt-18 flex-1 p-8 bg-gray-100 min-h-screen">
                 {loading && (
                     <LoadingModal show={loading} />
                 )}

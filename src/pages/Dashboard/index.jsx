@@ -134,7 +134,7 @@ const Dashboard = () => {
 
     return (
         <>
-            <main className="mt-22 flex-1 p-8 bg-gray-100">
+            <main className="mt-18 flex-1 p-8 bg-gray-100">
                 <div className="flex justify-between items-center">
                     {loading && (
                         <LoadingModal show={loading} />

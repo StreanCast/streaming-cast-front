@@ -9,6 +9,7 @@ export default function Player({ urlPlay }) {
 
     // --- cria o áudio uma vez ---
     const createAudio = () => {
+        console.log(urlPlay);
         const audio = new Audio(urlPlay);
         audio.volume = volume;
         audioRef.current = audio;

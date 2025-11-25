@@ -242,7 +242,7 @@ export default function FileManager() {
     };
 
     return (
-        <div className="mt-22 min-h-screen p-8 flex flex-col bg-gray-100 w-full">
+        <div className="mt-18 min-h-screen p-8 flex flex-col bg-gray-100 w-full">
             {loading && (
                 <LoadingModal show={loading} />
             )}
